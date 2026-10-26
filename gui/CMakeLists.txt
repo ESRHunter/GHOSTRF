@@ -48,6 +48,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::SerialPort
 )
 
+# Binary naming and portable RPATH
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "GHOSTRF-Studio"
+    BUILD_WITH_INSTALL_RPATH TRUE
+    INSTALL_RPATH "$ORIGIN/lib"
+)
+
 # Cross-platform installation and binary properties
 if(WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -58,7 +65,7 @@ endif()
 if(APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME "GHOUST STUDIO
-        Studio"
+        MACOSX_BUNDLE_BUNDLE_NAME "GHOSTRF Studio"
     )
 endif()
+
