@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GHOSTRF — SUB-GHZ MULTI-TOOL (ESP32-C3 + CC1101)</title>
+  <title>GHOSTRF — SUB-GHZ &amp; 2.4GHZ MULTI-TOOL (ESP32-C3 + CC1101)</title>
   
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="stylesheet" href="style.css">
@@ -32,7 +32,7 @@
         </div>
         <div>
           <div class="brand-text-name">[ GHOSTRF ]</div>
-          <div class="brand-text-sub">ESP32-C3 RISC-V + CC1101 + OLED 0.96"</div>
+          <div class="brand-text-sub">ESP32-C3 RISC-V + CC1101 + 2.4G + OLED 0.96"</div>
         </div>
       </a>
 
@@ -46,7 +46,7 @@
 
       <!-- Status Badge with Blinking Pixel Cursor -->
       <div class="status-indicator">
-        [ СТАТУС: CC1101 SPI ONLINE <span class="pixel-cursor"></span> ]
+        [ СТАТУС: CC1101 SPI + 2.4G ONLINE <span class="pixel-cursor"></span> ]
       </div>
 
     </div>
@@ -59,12 +59,12 @@
          HERO SECTION: STRICT & SQUARE
          ========================================================================= -->
     <section class="hero-box">
-      <div class="hero-tag">[ СУБ-ГИГАГЕРЦОВЫЙ РАДИОМУЛЬТИТУЛ &amp; ПАКЕТ ПО ]</div>
+      <div class="hero-tag">[ SUB-GHZ &amp; 2.4 GHZ РАДИОМУЛЬТИТУЛ &amp; ПАКЕТ ПО ]</div>
       <h1 class="hero-h1">
-        Портативный RF-Мультитул 433.92 МГц на ESP32-C3 + OLED + CC1101
+        Портативный RF-Мультитул Sub-GHz + 2.4 ГГц на ESP32-C3 + OLED + CC1101
       </h1>
       <p class="hero-p">
-        Компактный аппаратный мультитул для захвата, анализа, эмуляции радиосигналов и аудита беспроводных систем. Включает нативное Android-приложение (BLE 5.0), кроссплатформенную студию на Qt 6, неблокирующую C++ прошивку с декодером KeeLoq и браузерную прошивку по WebSerial.
+        Компактный аппаратный мультитул для захвата, анализа, эмуляции радиосигналов и аудита беспроводных систем. Поддерживает Sub-GHz (300–928 МГц CC1101: декодер KeeLoq, Came, Nice, RAW Sniffer, 32-кан. спектроанализатор) и 2.4 ГГц (ESP32-C3: Wi-Fi сканер, 13-кан. гистограмма, деаутентификатор, BLE радар, BLE/Beacon спамер), мониторинг Li-Po АКБ (GPIO 2), нативное Android-приложение (BLE 5.0), кроссплатформенную студию на Qt 6 и браузерную прошивку WebSerial.
       </p>
 
       <div class="hero-actions-row">
@@ -75,26 +75,26 @@
           [ APK: ANDROID СТУДИЯ (6.6 МБ) ]
         </a>
         <a href="firmware_merged.bin" download class="btn-square">
-          [ FIRMWARE: ОБРАЗ .BIN ]
+          [ FIRMWARE: ОБРАЗ .BIN (1.54 МБ) ]
         </a>
       </div>
 
       <div class="hero-specs-grid">
         <div class="spec-cell">
           <div class="spec-title">[ ДИАПАЗОН ЧАСТОТ ]</div>
-          <div class="spec-value">300 – 928 МГц (CC1101)</div>
+          <div class="spec-value">300–928 МГц CC1101 + 2.4 ГГц Wi-Fi/BLE</div>
         </div>
         <div class="spec-cell">
           <div class="spec-title">[ ВЫХОДНАЯ МОЩНОСТЬ ]</div>
-          <div class="spec-value">+10 dBm (4 ступени PA)</div>
+          <div class="spec-value">+10 dBm (CC1101) / +20 dBm (ESP32-C3)</div>
         </div>
         <div class="spec-cell">
           <div class="spec-title">[ ДЕКОДЕР ПАКЕТОВ ]</div>
-          <div class="spec-value">KeeLoq HCS301 / RAW Edge</div>
+          <div class="spec-value">KeeLoq HCS301 / Came / Nice / Deauth</div>
         </div>
         <div class="spec-cell">
-          <div class="spec-title">[ СПЕКТРОАНАЛИЗАТОР ]</div>
-          <div class="spec-value">32 канала с Peak Hold</div>
+          <div class="spec-title">[ АНАЛИЗАТОРЫ ]</div>
+          <div class="spec-value">32-кан. RF Спектр + 13-кан. Wi-Fi Ch</div>
         </div>
       </div>
     </section>
@@ -122,9 +122,9 @@
           <div class="chassis-top-antenna-bar">
             <div class="antenna-square-stub">
               <div class="antenna-wire-box"></div>
-              <span>[ SMA 433M ]</span>
+              <span>[ SMA 433M + 2.4G ]</span>
             </div>
-            <div class="chassis-label-center">[ GHOSTRF v1.2 ]</div>
+            <div class="chassis-label-center">[ GHOSTRF v1.3 ]</div>
             <div>[ ESP32-C3 ]</div>
           </div>
 
@@ -132,7 +132,7 @@
           <div class="oled-monitor-frame">
             <div class="oled-monitor-topbar">
               <span>SSD1306 I2C [ 128x64 ]</span>
-              <span>160MHz RISC-V</span>
+              <span>160MHz RISC-V + Li-Po</span>
             </div>
             <div class="oled-screen-surface">
               <canvas id="oledCanvas" width="512" height="256"></canvas>
@@ -151,7 +151,7 @@
             </div>
           </div>
 
-          <!-- Quick Mode Switcher (Matching 1:1 firmware states) -->
+          <!-- Quick Mode Switcher (Matching 1:1 firmware states - 4x4 Grid) -->
           <div class="modes-grid">
             <button class="btn-mode-quick" data-mode="0">[ 1. МЕНЮ ]</button>
             <button class="btn-mode-quick" data-mode="1">[ 2. REMOTE ]</button>
@@ -160,9 +160,13 @@
             <button class="btn-mode-quick" data-mode="9">[ 5. ЧАСТОТОМЕР ]</button>
             <button class="btn-mode-quick" data-mode="10">[ 6. СПЕКТР ]</button>
             <button class="btn-mode-quick" data-mode="11">[ 7. CARRIER ]</button>
-            <button class="btn-mode-quick" data-mode="12">[ 8. НАСТР. ]</button>
-            <button class="btn-mode-quick" data-mode="13">[ 9. ИНФО ]</button>
-            <button class="btn-mode-quick" data-mode="3">[ 10. WAVEFORM ]</button>
+            <button class="btn-mode-quick" data-mode="12">[ 8. 2.4G TOOLS ]</button>
+            <button class="btn-mode-quick" data-mode="13">[ 9. WIFI СКАН ]</button>
+            <button class="btn-mode-quick" data-mode="17">[ 10. BLE RADAR ]</button>
+            <button class="btn-mode-quick" data-mode="16">[ 11. DEAUTH MON ]</button>
+            <button class="btn-mode-quick" data-mode="20">[ 12. АКБ INFO ]</button>
+            <button class="btn-mode-quick" data-mode="21">[ 13. НАСТР. ]</button>
+            <button class="btn-mode-quick" data-mode="22">[ 14. ИНФО C3 ]</button>
             <button class="btn-mode-quick" id="btnQuickPacket">[ + ПАКЕТ RX ]</button>
             <button class="btn-mode-quick" id="btnReboot">[ ⟳ REBOOT ]</button>
           </div>
@@ -174,8 +178,8 @@
           
           <div class="panel-card">
             <div class="panel-card-title">
-              <span>[ ТЕЛЕМЕТРИЯ РАДИОМОДУЛЯ CC1101 LIVE ]</span>
-              <span>[ SPI BUS ]</span>
+              <span>[ ТЕЛЕМЕТРИЯ РАДИОМОДУЛЯ CC1101 &amp; 2.4G LIVE ]</span>
+              <span>[ SPI + RF BUS ]</span>
             </div>
 
             <div class="telemetry-grid-data">
@@ -207,6 +211,14 @@
                 <div class="tele-label">[ ДЕКОДЕР KEELOQ ]</div>
                 <div class="tele-val" id="telKeeloq">SN: 0x2A58F0 (B:2)</div>
               </div>
+              <div class="tele-item">
+                <div class="tele-label">[ АККУМУЛЯТОР LI-PO ]</div>
+                <div class="tele-val" id="telBattery">4.12V (94%) [LIPO]</div>
+              </div>
+              <div class="tele-item">
+                <div class="tele-label">[ 2.4 GHZ РАДИОСТЕК ]</div>
+                <div class="tele-val" id="tel24g">Wi-Fi + BLE 5.0 (CH 1..13)</div>
+              </div>
             </div>
 
             <!-- Waveform Pulse Inspector -->
@@ -229,12 +241,16 @@
             </div>
             <div style="display:flex; flex-wrap:wrap; gap:6px;">
               <span class="pin-tag">[ KeeLoq HCS200/300/301 ]</span>
-              <span class="pin-tag">[ Came TOP432 12-bit ]</span>
+              <span class="pin-tag">[ Came TOP432 12/24-bit ]</span>
               <span class="pin-tag">[ Nice Flo-R 52-bit ]</span>
+              <span class="pin-tag">[ Linear 10-bit / DoorHan ]</span>
+              <span class="pin-tag">[ Somfy RTS 433.42 ]</span>
               <span class="pin-tag">[ EV1527 Smart Relay ]</span>
               <span class="pin-tag">[ PT2262 Fixed Code ]</span>
               <span class="pin-tag">[ Sub-GHz .sub ]</span>
-              <span class="pin-tag">[ Li-Po Мониторинг АКБ ]</span>
+              <span class="pin-tag">[ Wi-Fi 802.11b/g/n Sniffer ]</span>
+              <span class="pin-tag">[ BLE 5.0 Proximity Radar ]</span>
+              <span class="pin-tag">[ Li-Po 3.7V ADC Монитор ]</span>
             </div>
           </div>
 
@@ -375,7 +391,7 @@
 
           <div>
             <a href="firmware_merged.bin" download class="btn-square" style="width:100%;">
-              [ FIRMWARE: FIRMWARE_MERGED.BIN (393 КБ, OFFSET 0x0) ]
+              [ FIRMWARE: FIRMWARE_MERGED.BIN (1.54 МБ, OFFSET 0x0) ]
             </a>
           </div>
         </div>
@@ -404,8 +420,9 @@
             <!-- Terminal Output Box -->
             <div class="terminal-square-log" id="termLog">
               <div class="term-line highlight">[SYS] WebSerial Engine initialized.</div>
-              <div class="term-line">[IMG] Binary image: firmware_merged.bin (Size: 393 KB)</div>
-              <div class="term-line">[MCU] Target platform: ESP32-C3 SuperMini 160MHz</div>
+              <div class="term-line">[IMG] Binary image: firmware_merged.bin (Size: 1.54 MB, 1 611 552 bytes)</div>
+              <div class="term-line">[MCU] Target platform: ESP32-C3 SuperMini 160MHz (Sub-GHz + 2.4G)</div>
+              <div class="term-line">[ADC] Battery monitor calibrated: GPIO 2 (ADC1_CH2, 100k:100k)</div>
               <div class="term-line">[TIP] Нажмите кнопку выше для автоматической записи прошивки.</div>
             </div>
           </div>
@@ -575,13 +592,13 @@
         </div>
         <div>
           <div style="font-weight:800; font-size:12px;">[ GHOSTRF ]</div>
-          <div style="font-size:10px; color:var(--c-gray-muted);">ESP32-C3 + CC1101 SUB-GHZ SUITE</div>
+          <div style="font-size:10px; color:var(--c-gray-muted);">ESP32-C3 + CC1101 SUB-GHZ &amp; 2.4GHZ SUITE</div>
         </div>
       </div>
 
       <div class="footer-links-side">
         <a href="GHOSTRF-Studio.apk" download class="footer-link-item">[ СКАЧАТЬ ANDROID APK ]</a>
-        <a href="firmware_merged.bin" download class="footer-link-item">[ ПРОШИВКА .BIN ]</a>
+        <a href="firmware_merged.bin" download class="footer-link-item">[ ПРОШИВКА .BIN (1.54 МБ) ]</a>
         <a href="logo.svg" download class="footer-link-item">[ ЛОГОТИП (SVG) ]</a>
       </div>
     </div>

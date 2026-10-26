@@ -7,21 +7,30 @@
 
 # Desktop C++ CMake Build
 build/
+**/build/
 cmake-build-*/
+**/cmake-build-*/
 CMakeFiles/
+**/CMakeFiles/
 CMakeCache.txt
+**/CMakeCache.txt
+compile_commands.json
+**/compile_commands.json
 *.o
 *.a
 *.so
 
 # Android Gradle & IDE
-android/RFHubMobile/.gradle/
-android/RFHubMobile/build/
-android/RFHubMobile/app/build/
-android/RFHubMobile/.kotlin/
-android/RFHubMobile/local.properties
 .gradle/
+**/.gradle/
+**/build/
+**/.kotlin/
+**/local.properties
 *.iml
+
+# APKs: keep only web/GHOSTRF-Studio.apk for web flasher / downloads
+*.apk
+!web/GHOSTRF-Studio.apk
 
 # IDE and OS
 .vscode/*

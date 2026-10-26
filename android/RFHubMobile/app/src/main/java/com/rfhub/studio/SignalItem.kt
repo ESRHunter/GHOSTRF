@@ -135,7 +135,20 @@ class SignalItem(
         val synthetic = mutableListOf<Int>()
         val te = if (pulseLen > 0) pulseLen else 320
 
-        if (protoName.contains("Came", ignoreCase = true)) {
+        if (protoName.contains("Came 24", ignoreCase = true)) {
+            synthetic.add(te)
+            synthetic.add(te * 36)
+            for (i in 23 downTo 0) {
+                val bit = ((code shr i) and 1L) == 1L
+                if (bit) {
+                    synthetic.add(te * 2)
+                    synthetic.add(te)
+                } else {
+                    synthetic.add(te)
+                    synthetic.add(te * 2)
+                }
+            }
+        } else if (protoName.contains("Came", ignoreCase = true)) {
             synthetic.add(te)
             synthetic.add(te * 36)
             for (i in 11 downTo 0) {
@@ -159,6 +172,19 @@ class SignalItem(
                 } else {
                     synthetic.add(te)
                     synthetic.add(te * 2)
+                }
+            }
+        } else if (protoName.contains("Linear", ignoreCase = true)) {
+            synthetic.add(te)
+            synthetic.add(te * 20)
+            for (i in 9 downTo 0) {
+                val bit = ((code shr i) and 1L) == 1L
+                if (bit) {
+                    synthetic.add(te)
+                    synthetic.add(te * 2)
+                } else {
+                    synthetic.add(te * 2)
+                    synthetic.add(te)
                 }
             }
         } else {
@@ -206,7 +232,7 @@ class SignalItem(
 
     fun toSubGhzFile(): String {
         val sb = java.lang.StringBuilder()
-        sb.append("Filetype: Flipper SubGhz Key File\n")
+        sb.append("Filetype: SubGhz Key File\n")
         sb.append("Version: 1\n")
         val hz = (freq * 1000000.0).roundToLong()
         sb.append("Frequency: $hz\n")

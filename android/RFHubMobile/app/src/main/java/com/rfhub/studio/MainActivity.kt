@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
     private val squelches = arrayOf("-85 dBm (MAX)", "-78 dBm (MID)", "-72 dBm (BASE)", "-65 dBm (LOW)")
     private val squelchLevels = intArrayOf(-85, -78, -72, -65)
     private val repeatOptions = arrayOf("1", "3", "5", "7", "10", "15", "20")
-    private val fixedProtocols = arrayOf("EV1527", "PT2262", "Came 12bit", "Nice 12bit", "RC-Switch 1")
+    private val fixedProtocols = arrayOf("EV1527", "PT2262", "Came 12bit", "Came 24bit", "Nice 12bit", "DoorHan", "Linear 10bit", "RC-Switch 1")
 
     // State
     private var isStreaming = true
@@ -227,7 +227,11 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
         binding.btnModeFreq.setOnClickListener { bleManager.setDeviceMode("FREQ") }
         binding.btnModeTx.setOnClickListener { bleManager.setDeviceMode("TX") }
         binding.btnModeCarrier.setOnClickListener { bleManager.setDeviceMode("CARRIER") }
+        binding.btnMode24G.setOnClickListener { bleManager.setDeviceMode("24G") }
+        binding.btnModeBattery.setOnClickListener { bleManager.setDeviceMode("BATTERY") }
         binding.btnModeSettings.setOnClickListener { bleManager.setDeviceMode("SETTINGS") }
+        binding.btnModeEditor.setOnClickListener { bleManager.setDeviceMode("NEW_SIG") }
+        binding.btnReboot.setOnClickListener { bleManager.rebootDevice() }
 
         // Radio spinners
         val adFreq = ArrayAdapter(this, R.layout.spinner_item, freqs).apply { setDropDownViewResource(R.layout.spinner_dropdown_item) }
@@ -427,6 +431,22 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
         binding.spFixedProto.adapter = adProto
         binding.spFixedRepeats.adapter = adReps
         binding.spFixedRepeats.setSelection(3) // 7 reps
+
+        binding.spFixedProto.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                when (position) {
+                    0 -> { binding.etFixedBitLen.setText("24"); binding.etFixedPulseLen.setText("320") }
+                    1 -> { binding.etFixedBitLen.setText("24"); binding.etFixedPulseLen.setText("350") }
+                    2 -> { binding.etFixedBitLen.setText("12"); binding.etFixedPulseLen.setText("320") }
+                    3 -> { binding.etFixedBitLen.setText("24"); binding.etFixedPulseLen.setText("320") }
+                    4 -> { binding.etFixedBitLen.setText("12"); binding.etFixedPulseLen.setText("700") }
+                    5 -> { binding.etFixedBitLen.setText("24"); binding.etFixedPulseLen.setText("400") }
+                    6 -> { binding.etFixedBitLen.setText("10"); binding.etFixedPulseLen.setText("1000") }
+                    7 -> { binding.etFixedBitLen.setText("24"); binding.etFixedPulseLen.setText("350") }
+                }
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
 
         fun updateFixedWaveformPreview() {
             val codeStr = binding.etFixedHex.text.toString().trim()

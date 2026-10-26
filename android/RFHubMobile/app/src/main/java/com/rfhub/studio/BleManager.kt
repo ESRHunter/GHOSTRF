@@ -33,7 +33,8 @@ class BleManager(private val context: Context) {
         fun onCapturedFixed(code: Long, codeHex: String, bitLen: Int, pulseLen: Int, proto: Int, freq: Double, rssi: Int)
         fun onCapturedRaw(proto: String, isKeeloq: Boolean, serial: Long, btn: Int, enc: Long, count: Int, freq: Double, rssi: Int, pulses: List<Int>)
         fun onDeviceReady(device: String, ver: String)
-        fun onPong(device: String, ver: String, chip: String, cc1101: Boolean, heap: Long, sigCount: Int, maxSig: Int, freq: Double, pa: Int, squelch: Int)
+        fun onPong(device: String, ver: String, chip: String, cc1101: Boolean, heap: Long, sigCount: Int, maxSig: Int, freq: Double, pa: Int, squelch: Int, batPct: Int = -1, batMv: Int = 0, charging: Boolean = false)
+        fun onBattery(rawAdc: Int, mv: Int, pct: Int, charging: Boolean, overvolt: Boolean) {}
         fun onSignalsBegin(count: Int)
         fun onSignalItem(item: SignalItem)
         fun onSignalsEnd()
@@ -443,6 +444,7 @@ class BleManager(private val context: Context) {
     fun setCarrier(mode: Int, freq: Double, pa: Int, on: Boolean) =
         sendCommand(String.format(Locale.US, "SET_CARRIER %d %.3f %d %d", mode, freq, pa, if (on) 1 else 0))
     fun rebootDevice() = sendCommand("REBOOT")
+    fun requestBattery() = sendCommand("GET_BATTERY")
 
     private fun parseIncomingLine(line: String) {
         listener?.onLineReceived(line)
@@ -469,8 +471,19 @@ class BleManager(private val context: Context) {
                         val f = json.optDouble("freq", 433.92)
                         val pa = json.optInt("pa", 10)
                         val sq = json.optInt("squelch", -72)
+                        val batPct = json.optInt("bat_pct", -1)
+                        val batMv = json.optInt("bat_mv", 0)
+                        val chg = json.optBoolean("charging", false)
                         listener?.onConnectionStep(3, "Синхронизация завершена. Готово к работе!")
-                        listener?.onPong(dev, ver, chip, cc, heap, sc, maxS, f, pa, sq)
+                        listener?.onPong(dev, ver, chip, cc, heap, sc, maxS, f, pa, sq, batPct, batMv, chg)
+                    }
+                    "BATTERY" -> {
+                        val raw = json.optInt("raw", 0)
+                        val mv = json.optInt("mv", 0)
+                        val pct = json.optInt("pct", -1)
+                        val chg = json.optBoolean("charging", false)
+                        val ov = json.optBoolean("overvolt", false)
+                        listener?.onBattery(raw, mv, pct, chg, ov)
                     }
                     "SIGNALS_BEGIN" -> {
                         val count = json.optInt("count", 0)

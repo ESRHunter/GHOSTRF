@@ -52,6 +52,27 @@ void radio_set_idle() {
 }
 
 void radio_transmit_fixed(uint32_t code, uint8_t bitLength, uint16_t pulseLength, uint8_t protocol, float freq, int paLevel, uint8_t repeats) {
+    if (protocol == 3) {
+        radio_transmit_came12((uint16_t)code, freq, paLevel, repeats);
+        return;
+    }
+    if (protocol == 4) {
+        radio_transmit_came24(code, freq, paLevel, repeats);
+        return;
+    }
+    if (protocol == 5) {
+        radio_transmit_nice12((uint16_t)code, freq, paLevel, repeats);
+        return;
+    }
+    if (protocol == 7) {
+        radio_transmit_linear10((uint16_t)code, freq, paLevel, repeats);
+        return;
+    }
+    if (protocol == 8) {
+        radio_transmit_pt2240(code, freq, paLevel, repeats);
+        return;
+    }
+
     radio_set_tx(freq, paLevel);
     mySwitch.enableTransmit(CC_GDO0);
     mySwitch.setProtocol(protocol);
