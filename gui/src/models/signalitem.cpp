@@ -56,7 +56,21 @@ QVector<uint16_t> SignalItem::toWaveformPulses() const {
     int te = (pulseLen > 0) ? pulseLen : 320;
 
     // Синтезируем импульсы для фиксированных протоколов
-    if (protoName.contains("Came", Qt::CaseInsensitive)) {
+    if (protoName.contains("Came 24", Qt::CaseInsensitive)) {
+        // CAME 24-bit
+        synthetic.append(te);
+        synthetic.append(te * 36);
+        for (int i = 23; i >= 0; i--) {
+            bool bit = (code >> i) & 1;
+            if (bit) {
+                synthetic.append(te * 2);
+                synthetic.append(te);
+            } else {
+                synthetic.append(te);
+                synthetic.append(te * 2);
+            }
+        }
+    } else if (protoName.contains("Came", Qt::CaseInsensitive)) {
         // CAME 12-bit
         synthetic.append(te);
         synthetic.append(te * 36);
@@ -82,6 +96,20 @@ QVector<uint16_t> SignalItem::toWaveformPulses() const {
             } else {
                 synthetic.append(te);
                 synthetic.append(te * 2);
+            }
+        }
+    } else if (protoName.contains("Linear", Qt::CaseInsensitive)) {
+        // Linear 10-bit
+        synthetic.append(te);
+        synthetic.append(te * 20);
+        for (int i = 9; i >= 0; i--) {
+            bool bit = (code >> i) & 1;
+            if (bit) {
+                synthetic.append(te);
+                synthetic.append(te * 2);
+            } else {
+                synthetic.append(te * 2);
+                synthetic.append(te);
             }
         }
     } else {
@@ -161,7 +189,7 @@ SignalItem SignalItem::fromJson(const QJsonObject &obj) {
 
 QString SignalItem::toSubGhzFile() const {
     QString out;
-    out += "Filetype: Flipper SubGhz Key File\n";
+    out += "Filetype: SubGhz Key File\n";
     out += "Version: 1\n";
     quint64 hz = static_cast<quint64>(std::round(freq * 1000000.0));
     out += QString("Frequency: %1\n").arg(hz);

@@ -82,6 +82,10 @@ void DeviceManager::sendPing() {
     writeLine("PING");
 }
 
+void DeviceManager::requestBattery() {
+    writeLine("GET_BATTERY");
+}
+
 void DeviceManager::requestSignals() {
     writeLine("GET_SIGNALS");
 }
@@ -242,8 +246,21 @@ void DeviceManager::parseLine(const QString &line) {
             m_info.freq = obj.value("freq").toDouble(433.92);
             m_info.paLevel = obj.value("pa").toInt(10);
             m_info.squelch = obj.value("squelch").toInt(-72);
+            m_info.batPct = obj.value("bat_pct").toInt(-1);
+            m_info.batMv = obj.value("bat_mv").toInt(0);
+            m_info.charging = obj.value("charging").toBool(false);
 
             emit pongReceived(m_info);
+            emit batteryUpdated(m_info.batPct, m_info.batMv, m_info.charging);
+        }
+        else if (cmd == "BATTERY") {
+            int pct = obj.value("pct").toInt(-1);
+            int mv = obj.value("mv").toInt(0);
+            bool chg = obj.value("charging").toBool(false);
+            m_info.batPct = pct;
+            m_info.batMv = mv;
+            m_info.charging = chg;
+            emit batteryUpdated(pct, mv, chg);
         }
         else if (cmd == "SIGNALS_BEGIN") {
             int total = obj.value("count").toInt();

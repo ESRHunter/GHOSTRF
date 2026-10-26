@@ -37,6 +37,7 @@ private slots:
     void toggleConnection();
     void onConnectionStateChanged(bool connected, const QString &portName);
     void onPongReceived(const DeviceInfo &info);
+    void onBatteryUpdated(int pct, int mv, bool charging);
     void onConfigReceived(int freqIdx, double freqVal, int paIdx, int paVal, int squelchIdx, int squelchVal);
 
     // Стриминг дисплея OLED
@@ -118,6 +119,7 @@ private:
     QPushButton *m_btnConnect;
     QLabel *m_statusLed;
     QLabel *m_statusText;
+    QLabel *m_batteryBadge;
     QLabel *m_telemetryBadge;
 
     // Вкладка: Стриминг дисплея и пульт

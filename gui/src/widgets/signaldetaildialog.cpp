@@ -53,7 +53,7 @@ void SignalDetailDialog::setupUi() {
     form->addRow("Частота (CC1101):", m_freqSpin);
 
     m_protoCombo = new QComboBox(this);
-    m_protoCombo->addItems({"EV1527", "PT2262", "Came 12bit", "Nice 12bit", "RAW", "KeeLoq"});
+    m_protoCombo->addItems({"EV1527", "PT2262", "Came 12bit", "Came 24bit", "Nice 12bit", "DoorHan", "Linear 10bit", "RAW", "KeeLoq"});
     m_protoCombo->setCurrentText(m_item.protoName.isEmpty() ? "EV1527" : m_item.protoName);
     connect(m_protoCombo, &QComboBox::currentTextChanged, this, &SignalDetailDialog::updatePreview);
     form->addRow("Протокол кодирования:", m_protoCombo);

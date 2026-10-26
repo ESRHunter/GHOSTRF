@@ -58,6 +58,7 @@ endif()
 if(APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME "RF-Hub 433 Studio"
+        MACOSX_BUNDLE_BUNDLE_NAME "GHOUST STUDIO
+        Studio"
     )
 endif()

@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Подключение сигналов от DeviceManager
     connect(m_dev, &DeviceManager::connectionStateChanged, this, &MainWindow::onConnectionStateChanged);
     connect(m_dev, &DeviceManager::pongReceived, this, &MainWindow::onPongReceived);
+    connect(m_dev, &DeviceManager::batteryUpdated, this, &MainWindow::onBatteryUpdated);
     connect(m_dev, &DeviceManager::configReceived, this, &MainWindow::onConfigReceived);
     connect(m_dev, &DeviceManager::screenFrameReceived, this, &MainWindow::onScreenFrameReceived);
 
@@ -460,6 +461,10 @@ QWidget* MainWindow::createTopBar() {
 
     layout->addStretch();
 
+    m_batteryBadge = new QLabel("[ 🔋 --% ]", this);
+    m_batteryBadge->setStyleSheet("color: #00FF66; font-family: Monospace; font-size: 11px; font-weight: bold; margin-right: 8px;");
+    layout->addWidget(m_batteryBadge);
+
     m_telemetryBadge = new QLabel("[ УСТРОЙСТВО НЕ НАЙДЕНО ]", this);
     m_telemetryBadge->setStyleSheet("color: #777777; font-family: Monospace; font-size: 11px;");
     layout->addWidget(m_telemetryBadge);
@@ -577,13 +582,30 @@ QWidget* MainWindow::createDisplayAndRemoteTab() {
     connect(btnTx, &QPushButton::clicked, this, [this]() { m_dev->setDeviceMode("TX"); });
     navGrid->addWidget(btnTx, 2, 1);
 
-    auto *btnGen = new QPushButton("[ 7. ГЕНЕРАТОР / ГЛУШ. ]", this);
+    auto *btnGen = new QPushButton("[ 7. ГЕНЕРАТОР / JAM ]", this);
     connect(btnGen, &QPushButton::clicked, this, [this]() { m_dev->setDeviceMode("CARRIER"); });
     navGrid->addWidget(btnGen, 3, 0);
 
-    auto *btnSet = new QPushButton("[ 8. НАСТРОЙКИ ]", this);
+    auto *btn24g = new QPushButton("[ 8. 2.4GHz ТУЛЗ ]", this);
+    connect(btn24g, &QPushButton::clicked, this, [this]() { m_dev->setDeviceMode("24G"); });
+    navGrid->addWidget(btn24g, 3, 1);
+
+    auto *btnBat = new QPushButton("[ 9. БАТАРЕЯ ]", this);
+    connect(btnBat, &QPushButton::clicked, this, [this]() { m_dev->setDeviceMode("BATTERY"); });
+    navGrid->addWidget(btnBat, 4, 0);
+
+    auto *btnSet = new QPushButton("[ 10. НАСТРОЙКИ ]", this);
     connect(btnSet, &QPushButton::clicked, this, [this]() { m_dev->setDeviceMode("SETTINGS"); });
-    navGrid->addWidget(btnSet, 3, 1);
+    navGrid->addWidget(btnSet, 4, 1);
+
+    auto *btnEdit = new QPushButton("[ 11. РЕДАКТОР СИГНАЛА ]", this);
+    connect(btnEdit, &QPushButton::clicked, this, [this]() { m_dev->setDeviceMode("NEW_SIG"); });
+    navGrid->addWidget(btnEdit, 5, 0);
+
+    auto *btnRebootNav = new QPushButton("[ ⟳ REBOOT ]", this);
+    btnRebootNav->setObjectName("btnDanger");
+    connect(btnRebootNav, &QPushButton::clicked, this, &MainWindow::rebootEspDevice);
+    navGrid->addWidget(btnRebootNav, 5, 1);
 
     remoteLayout->addWidget(navGroup);
 
@@ -811,7 +833,7 @@ QWidget* MainWindow::createTransmitterTab() {
     form->addRow("ЧАСТОТА:", m_genFreqSpin);
 
     m_genProtoCombo = new QComboBox(this);
-    m_genProtoCombo->addItems({"EV1527", "PT2262", "Came 12bit", "Nice 12bit", "RC-Switch (Proto 1)"});
+    m_genProtoCombo->addItems({"EV1527", "PT2262", "Came 12bit", "Came 24bit", "Nice 12bit", "DoorHan", "Linear 10bit", "RC-Switch (Proto 1)"});
     connect(m_genProtoCombo, &QComboBox::currentTextChanged, this, &MainWindow::updateGenWaveform);
     form->addRow("ПРОТОКОЛ:", m_genProtoCombo);
 
@@ -1229,6 +1251,7 @@ void MainWindow::onConnectionStateChanged(bool connected, const QString &portNam
         m_statusText->setText(QString("ПОДКЛЮЧЕНО: %1").arg(portName));
         m_statusText->setStyleSheet("font-weight: bold; color: #00FF66; font-family: Monospace;");
         m_dev->requestSignals();
+        m_dev->requestBattery();
         if (m_screenStreamActive) {
             m_dev->startScreenStream();
         }
@@ -1250,6 +1273,7 @@ void MainWindow::onConnectionStateChanged(bool connected, const QString &portNam
         m_statusLed->setStyleSheet("font-weight: bold; color: #666666; font-family: Monospace;");
         m_statusText->setText("ОТКЛЮЧЕНО");
         m_statusText->setStyleSheet("font-weight: bold; color: #888888; font-family: Monospace;");
+        if (m_batteryBadge) m_batteryBadge->setText("[ 🔋 --% ]");
         m_telemetryBadge->setText("[ УСТРОЙСТВО НЕ НАЙДЕНО ]");
         m_oledWidget->clearDisplay();
 
@@ -1262,12 +1286,16 @@ void MainWindow::onConnectionStateChanged(bool connected, const QString &portNam
 }
 
 void MainWindow::onPongReceived(const DeviceInfo &info) {
-    QString tel = QString("[%1 v%2 | %3] CC1101: %4 | HEAP: %5KB | СИГНАЛОВ: %6/%7")
+    QString batStr = info.charging ? "[ ⚡ USB ]" : (info.batPct >= 0 ? QString("[ 🔋 %1% %2V ]").arg(info.batPct).arg(info.batMv / 1000.0, 0, 'f', 2) : "[ 🔋 --% ]");
+    if (m_batteryBadge) m_batteryBadge->setText(batStr);
+
+    QString tel = QString("[%1 v%2 | %3] CC1101: %4 | HEAP: %5KB | СИГНАЛОВ: %6/%7 | %8")
                       .arg(info.deviceName, info.version, info.chip)
                       .arg(info.cc1101Ok ? "OK" : "ERR")
                       .arg(info.freeHeap / 1024)
                       .arg(info.signalsCount)
-                      .arg(info.maxSignals);
+                      .arg(info.maxSignals)
+                      .arg(batStr);
     m_telemetryBadge->setText(tel);
 
     if (m_step3Label) {
@@ -1282,6 +1310,12 @@ void MainWindow::onPongReceived(const DeviceInfo &info) {
             showMainStudio();
         });
     }
+}
+
+void MainWindow::onBatteryUpdated(int pct, int mv, bool charging) {
+    QString batStr = charging ? "[ ⚡ USB ]" : (pct >= 0 ? QString("[ 🔋 %1% %2V ]").arg(pct).arg(mv / 1000.0, 0, 'f', 2) : "[ 🔋 --% ]");
+    if (m_batteryBadge) m_batteryBadge->setText(batStr);
+    appendLog(QString("[BATTERY] %1 (%2 mV)").arg(batStr).arg(mv));
 }
 
 void MainWindow::onConfigReceived(int freqIdx, double freqVal, int paIdx, int paVal, int squelchIdx, int squelchVal) {
@@ -1611,8 +1645,14 @@ void MainWindow::transmitCustomFixed() {
     else if (m_genPowerCombo->currentIndex() == 3) pa = -30;
 
     int proto = 1;
-    if (m_genProtoCombo->currentText().contains("Came")) proto = 6;
-    else if (m_genProtoCombo->currentText().contains("Nice")) proto = 7;
+    QString pName = m_genProtoCombo->currentText();
+    if (pName.contains("Came 12")) proto = 3;
+    else if (pName.contains("Came 24")) proto = 4;
+    else if (pName.contains("Nice")) proto = 5;
+    else if (pName.contains("DoorHan")) proto = 6;
+    else if (pName.contains("Linear")) proto = 7;
+    else if (pName.contains("PT2262")) proto = 2;
+    else if (pName.contains("RC-Switch") || pName.contains("PT2240")) proto = 8;
 
     appendLog(QString("[TX] Фиксированный код: %1 МГц, 0x%2, %3 бит, TE=%4 µs, Повторов: %5")
                   .arg(freq).arg(code, 6, 16, QChar('0')).arg(bitLen).arg(pulseLen).arg(repeats));
@@ -1628,7 +1668,18 @@ void MainWindow::saveCustomFixed() {
     int bitLen = m_genBitLenSpin->value();
     int pulseLen = m_genPulseLenSpin->value();
     int repeats = m_genRepeatsSpin->value();
-    m_dev->saveFixed(name, freq, code, bitLen, pulseLen, 1, repeats, m_genProtoCombo->currentText());
+
+    int proto = 1;
+    QString pName = m_genProtoCombo->currentText();
+    if (pName.contains("Came 12")) proto = 3;
+    else if (pName.contains("Came 24")) proto = 4;
+    else if (pName.contains("Nice")) proto = 5;
+    else if (pName.contains("DoorHan")) proto = 6;
+    else if (pName.contains("Linear")) proto = 7;
+    else if (pName.contains("PT2262")) proto = 2;
+    else if (pName.contains("RC-Switch") || pName.contains("PT2240")) proto = 8;
+
+    m_dev->saveFixed(name, freq, code, bitLen, pulseLen, proto, repeats, m_genProtoCombo->currentText());
 }
 
 void MainWindow::onRawGenTextChanged() {

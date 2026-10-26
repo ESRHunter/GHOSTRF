@@ -21,6 +21,9 @@ struct DeviceInfo {
     double freq = 433.92;
     int paLevel = 10;
     int squelch = -72;
+    int batPct = -1;
+    int batMv = 0;
+    bool charging = false;
 };
 
 class DeviceManager : public QObject {
@@ -40,6 +43,7 @@ public:
 
     // Команды устройства
     void sendPing();
+    void requestBattery();
     void requestSignals();
     void transmitSaved(int index);
     void transmitFixed(double freq, quint32 code, int bitLen, int pulseLen, int proto, int paLevel, int repeats);
@@ -64,6 +68,7 @@ public:
 signals:
     void connectionStateChanged(bool connected, const QString &portName);
     void pongReceived(const DeviceInfo &info);
+    void batteryUpdated(int pct, int mv, bool charging);
     void screenFrameReceived(const QByteArray &frameData);
     void signalListBegin(int total);
     void signalItemReceived(const SignalItem &item);
