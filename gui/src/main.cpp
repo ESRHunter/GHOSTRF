@@ -48,7 +48,8 @@ int main(int argc, char *argv[]) {
     app.setApplicationName("GHOSTRF-Studio");
     app.setApplicationDisplayName("GHOSTRF STUDIO");
     app.setOrganizationName("GHOSTRF");
-    app.setDesktopFileName("GHOSTRF-Studio.desktop");
+    app.setDesktopFileName("GHOSTRF-Studio");
+
 
     DarkTheme::apply(&app);
 

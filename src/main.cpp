@@ -936,7 +936,7 @@ void loop() {
     }
 
     if (currentState == MODE_SPECTRUM) {
-        if (millis() - lastSpectrumUpdate > 80) {
+        if (millis() - lastSpectrumUpdate > 25) {
             lastSpectrumUpdate = millis();
             ui_update_spectrum(currentSpectrumBandIdx);
         }

@@ -11,6 +11,7 @@ static Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 static uint8_t rxAnimFrame = 0;
 
 static int peakHold[SPECTRUM_CHANNELS] = {0};
+static int currentBars[SPECTRUM_CHANNELS] = {0};
 static unsigned long lastPeakDecay = 0;
 
 const SpectrumBand SPECTRUM_BANDS[NUM_SPECTRUM_BANDS] = {
@@ -809,6 +810,7 @@ void ui_draw_spectrum_screen(int bandIdx) {
 void ui_reset_spectrum_peaks() {
     for (int ch = 0; ch < SPECTRUM_CHANNELS; ch++) {
         peakHold[ch] = 0;
+        currentBars[ch] = 0;
     }
 }
 
@@ -818,7 +820,7 @@ void ui_update_spectrum(int bandIdx) {
 
     display.fillRect(0, 11, SCREEN_WIDTH, 41, SSD1306_BLACK);
 
-    if (millis() - lastPeakDecay > 1200) {
+    if (millis() - lastPeakDecay > 350) {
         lastPeakDecay = millis();
         for (int ch = 0; ch < SPECTRUM_CHANNELS; ch++) {
             if (peakHold[ch] > 0) peakHold[ch]--;
@@ -833,12 +835,24 @@ void ui_update_spectrum(int bandIdx) {
             maxRssi = rssi;
         }
 
-        int barHeight = map(constrain(rssi, -110, -15), -110, -15, 0, 40);
-        if (barHeight > peakHold[ch]) {
-            peakHold[ch] = barHeight;
+        // Динамический диапазон: от -88 dBm (уровень шума) до -35 dBm (сильный сигнал)
+        // При чистом шуме (-80..-85) столбик 2-5 px, при сигнале пульта (-65..-40) столбик 16-36 px!
+        int targetHeight = map(constrain(rssi, -88, -35), -88, -35, 1, 40);
+
+        // Мгновенная атака (Instant Attack) и плавный спад (Smooth Decay)
+        if (targetHeight > currentBars[ch]) {
+            currentBars[ch] = targetHeight;
+        } else if (currentBars[ch] > 1) {
+            currentBars[ch] -= 2;
+            if (currentBars[ch] < 1) currentBars[ch] = 1;
+        }
+
+        if (currentBars[ch] > peakHold[ch]) {
+            peakHold[ch] = currentBars[ch];
         }
 
         int x = ch * 4;
+        int barHeight = currentBars[ch];
         int y = 51 - barHeight;
 
         if (barHeight > 0) {

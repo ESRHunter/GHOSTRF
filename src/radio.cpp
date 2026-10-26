@@ -152,15 +152,20 @@ int radio_scan_rssi(float freq) {
     ELECHOUSE_cc1101.SetRx(freq);
     uint32_t start = micros();
     // Wait for CC1101 state machine to calibrate and enter RX (MARCSTATE 0x0D = 13)
-    while (micros() - start < 1500) {
+    while (micros() - start < 1200) {
         if ((ELECHOUSE_cc1101.SpiReadStatus(CC1101_MARCSTATE) & 0x1F) == 0x0D) {
             break;
         }
-        delayMicroseconds(25);
+        delayMicroseconds(20);
     }
-    // Allow RSSI filter to settle on incoming RF power (4 / RxBW ~ 5us, wait 50us)
-    delayMicroseconds(60);
-    return ELECHOUSE_cc1101.getRssi();
+    // Dwell and peak-detect over ~250 microseconds (reliably catches OOK pulses)
+    int maxRssi = -130;
+    for (int i = 0; i < 4; i++) {
+        int r = ELECHOUSE_cc1101.getRssi();
+        if (r > maxRssi) maxRssi = r;
+        delayMicroseconds(50);
+    }
+    return maxRssi;
 }
 
 int radio_get_rssi() {
