@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHOSTRF — SUB-GHZ MULTI-TOOL (ESP32-C3 + CC1101)</title>
+  
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Monospace & Pixel Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- ESP Web Tools for In-Browser WebSerial Flashing -->
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+</head>
+<body>
+
+  <!-- Fullscreen Falling Pixel Rain Background Canvas -->
+  <canvas id="bgPixelCanvas" class="bg-pixel-canvas"></canvas>
+
+  <!-- Top Navigation Header -->
+  <header class="top-header">
+    <div class="header-container">
+      
+      <!-- Brand & Mascot -->
+      <a href="#" class="brand-block">
+        <div class="mascot-pixel-box">
+          <img src="ghost_pixel_white.png" alt="Ghost Mascot" class="mascot-pixel-img">
+        </div>
+        <div>
+          <div class="brand-text-name">[ GHOSTRF ]</div>
+          <div class="brand-text-sub">ESP32-C3 RISC-V + CC1101 + OLED 0.96"</div>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links-row">
+        <a href="#sec-device" class="nav-btn">[ 01. ГАДЖЕТ ]</a>
+        <a href="#sec-apps" class="nav-btn">[ 02. ПРИЛОЖЕНИЯ ]</a>
+        <a href="#sec-firmware" class="nav-btn">[ 03. ПРОШИВКА ]</a>
+        <a href="#sec-hardware" class="nav-btn">[ 04. СХЕМА ПИНОВ ]</a>
+      </nav>
+
+      <!-- Status Badge with Blinking Pixel Cursor -->
+      <div class="status-indicator">
+        [ СТАТУС: CC1101 SPI ONLINE <span class="pixel-cursor"></span> ]
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- =========================================================================
+         HERO SECTION: STRICT & SQUARE
+         ========================================================================= -->
+    <section class="hero-box">
+      <div class="hero-tag">[ СУБ-ГИГАГЕРЦОВЫЙ РАДИОМУЛЬТИТУЛ &amp; ПАКЕТ ПО ]</div>
+      <h1 class="hero-h1">
+        Портативный RF-Мультитул 433.92 МГц на ESP32-C3 + OLED + CC1101
+      </h1>
+      <p class="hero-p">
+        Компактный аппаратный мультитул для захвата, анализа, эмуляции радиосигналов и аудита беспроводных систем. Включает нативное Android-приложение (BLE 5.0), кроссплатформенную студию на Qt 6, неблокирующую C++ прошивку с декодером KeeLoq и браузерную прошивку по WebSerial.
+      </p>
+
+      <div class="hero-actions-row">
+        <a href="#sec-firmware" class="btn-square btn-square-primary">
+          [ INSTALL: ВЕБ-ПРОШИВКА (WEBSERIAL) ]
+        </a>
+        <a href="GHOSTRF-Studio.apk" download class="btn-square">
+          [ APK: ANDROID СТУДИЯ (6.6 МБ) ]
+        </a>
+        <a href="firmware_merged.bin" download class="btn-square">
+          [ FIRMWARE: ОБРАЗ .BIN ]
+        </a>
+      </div>
+
+      <div class="hero-specs-grid">
+        <div class="spec-cell">
+          <div class="spec-title">[ ДИАПАЗОН ЧАСТОТ ]</div>
+          <div class="spec-value">300 – 928 МГц (CC1101)</div>
+        </div>
+        <div class="spec-cell">
+          <div class="spec-title">[ ВЫХОДНАЯ МОЩНОСТЬ ]</div>
+          <div class="spec-value">+10 dBm (4 ступени PA)</div>
+        </div>
+        <div class="spec-cell">
+          <div class="spec-title">[ ДЕКОДЕР ПАКЕТОВ ]</div>
+          <div class="spec-value">KeeLoq HCS301 / RAW Edge</div>
+        </div>
+        <div class="spec-cell">
+          <div class="spec-title">[ СПЕКТРОАНАЛИЗАТОР ]</div>
+          <div class="spec-value">32 канала с Peak Hold</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 01: HARDWARE GADGET & OLED SIMULATOR (STRICT MONOCHROME)
+         ========================================================================= -->
+    <section class="section-panel" id="sec-device">
+      <div class="section-panel-header">
+        <div>
+          <h2 class="section-h2">[ 01. ИНТЕРАКТИВНЫЙ ГАДЖЕТ И OLED СИМУЛЯТОР ]</h2>
+          <div class="section-subtext">Полнофункциональная симуляция прошивки SSD1306 (128x64) с аппаратными прерываниями GDO0</div>
+        </div>
+        <div class="status-indicator">
+          [ КЛАВИАТУРА: ↑ / ↓ / ENTER / ESC ]
+        </div>
+      </div>
+
+      <div class="device-workbench">
+        
+        <!-- Left: Handheld Device Case -->
+        <div class="chassis-square">
+          
+          <!-- Top Antenna Bar -->
+          <div class="chassis-top-antenna-bar">
+            <div class="antenna-square-stub">
+              <div class="antenna-wire-box"></div>
+              <span>[ SMA 433M ]</span>
+            </div>
+            <div class="chassis-label-center">[ GHOSTRF v1.2 ]</div>
+            <div>[ ESP32-C3 ]</div>
+          </div>
+
+          <!-- OLED Screen Display -->
+          <div class="oled-monitor-frame">
+            <div class="oled-monitor-topbar">
+              <span>SSD1306 I2C [ 128x64 ]</span>
+              <span>160MHz RISC-V</span>
+            </div>
+            <div class="oled-screen-surface">
+              <canvas id="oledCanvas" width="512" height="256"></canvas>
+            </div>
+          </div>
+
+          <!-- Controls: D-Pad & Menu -->
+          <div class="controls-layout">
+            <div class="dpad-row">
+              <button id="btnUp" class="btn-dpad">[ UP: ВВЕРХ ]</button>
+              <button id="btnOk" class="btn-dpad btn-dpad-ok">[ OK: ВЫБОР ]</button>
+              <button id="btnDown" class="btn-dpad">[ DN: ВНИЗ ]</button>
+            </div>
+            <div class="dpad-row-wide">
+              <button id="btnHoldShortcut" class="btn-dpad">[ HOLD OK: ГЛАВНОЕ МЕНЮ ]</button>
+            </div>
+          </div>
+
+          <!-- Quick Mode Switcher (Matching 1:1 firmware states) -->
+          <div class="modes-grid">
+            <button class="btn-mode-quick" data-mode="0">[ 1. МЕНЮ ]</button>
+            <button class="btn-mode-quick" data-mode="1">[ 2. REMOTE ]</button>
+            <button class="btn-mode-quick" data-mode="5">[ 3. RX СКАН ]</button>
+            <button class="btn-mode-quick" data-mode="7">[ 4. RAW SNIFF ]</button>
+            <button class="btn-mode-quick" data-mode="9">[ 5. ЧАСТОТОМЕР ]</button>
+            <button class="btn-mode-quick" data-mode="10">[ 6. СПЕКТР ]</button>
+            <button class="btn-mode-quick" data-mode="11">[ 7. CARRIER ]</button>
+            <button class="btn-mode-quick" data-mode="12">[ 8. НАСТР. ]</button>
+            <button class="btn-mode-quick" data-mode="13">[ 9. ИНФО ]</button>
+            <button class="btn-mode-quick" data-mode="3">[ 10. WAVEFORM ]</button>
+            <button class="btn-mode-quick" id="btnQuickPacket">[ + ПАКЕТ RX ]</button>
+            <button class="btn-mode-quick" id="btnReboot">[ ⟳ REBOOT ]</button>
+          </div>
+
+        </div>
+
+        <!-- Right: Telemetry & Waveform Inspector -->
+        <div class="telemetry-column">
+          
+          <div class="panel-card">
+            <div class="panel-card-title">
+              <span>[ ТЕЛЕМЕТРИЯ РАДИОМОДУЛЯ CC1101 LIVE ]</span>
+              <span>[ SPI BUS ]</span>
+            </div>
+
+            <div class="telemetry-grid-data">
+              <div class="tele-item">
+                <div class="tele-label">[ НЕСУЩАЯ ЧАСТОТА ]</div>
+                <div class="tele-val" id="telFreq">433.92 MHz</div>
+              </div>
+              <div class="tele-item">
+                <div class="tele-label">[ ШУМОПОДАВИТЕЛЬ (SQUELCH) ]</div>
+                <div class="tele-val" id="telSquelch">-78 dBm</div>
+              </div>
+              <div class="tele-item">
+                <div class="tele-label">[ МОЩНОСТЬ ПЕРЕДАТЧИКА ]</div>
+                <div class="tele-val" id="telPower">+10 dBm (10 mW)</div>
+              </div>
+              <div class="tele-item">
+                <div class="tele-label">[ СОХРАНЕНО В FLASH NVS ]</div>
+                <div class="tele-val" id="telCount">5 / 20 слотов</div>
+              </div>
+              <div class="tele-item">
+                <div class="tele-label">[ РЕЖИМ ПРОШИВКИ MCU ]</div>
+                <div class="tele-val" id="telState">MODE_MAIN_MENU</div>
+              </div>
+              <div class="tele-item">
+                <div class="tele-label">[ ПОСЛЕДНИЙ ПЕРЕХВАТ RX ]</div>
+                <div class="tele-val" id="telCode">0x547A11 (24b)</div>
+              </div>
+              <div class="tele-item">
+                <div class="tele-label">[ ДЕКОДЕР KEELOQ ]</div>
+                <div class="tele-val" id="telKeeloq">SN: 0x2A58F0 (B:2)</div>
+              </div>
+            </div>
+
+            <!-- Waveform Pulse Inspector -->
+            <div class="waveform-container">
+              <div class="waveform-tag-row">
+                <span>[ ЦИФРОВОЙ МИКРО-ОСЦИЛЛОГРАФ OOK / ASK TIMINGS ]</span>
+                <span>[ GDO0 ISR ]</span>
+              </div>
+              <svg viewBox="0 0 440 38" class="waveform-svg-line">
+                <path d="M 0 35 L 20 35 L 20 5 L 45 5 L 45 35 L 60 35 L 60 5 L 80 5 L 80 35 L 95 35 L 95 5 L 140 5 L 140 35 L 155 35 L 155 5 L 175 5 L 175 35 L 195 35 L 195 5 L 240 5 L 240 35 L 255 35 L 255 5 L 280 5 L 280 35 L 295 35 L 295 5 L 340 5 L 340 35 L 360 35 L 360 5 L 385 5 L 385 35 L 405 35 L 405 5 L 440 5" fill="none" stroke="#ffffff" stroke-width="2" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Protocol List -->
+          <div class="panel-card">
+            <div class="panel-card-title">
+              <span>[ ПОДДЕРЖИВАЕМЫЕ ПРОТОКОЛЫ ]</span>
+              <span>[ RX / TX / REPLAY ]</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <span class="pin-tag">[ KeeLoq HCS200/300/301 ]</span>
+              <span class="pin-tag">[ Came TOP432 12-bit ]</span>
+              <span class="pin-tag">[ Nice Flo-R 52-bit ]</span>
+              <span class="pin-tag">[ EV1527 Smart Relay ]</span>
+              <span class="pin-tag">[ PT2262 Fixed Code ]</span>
+              <span class="pin-tag">[ Sub-GHz .sub ]</span>
+              <span class="pin-tag">[ Li-Po Мониторинг АКБ ]</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 02: APPLICATIONS SUITE (ANDROID & QT6 DESKTOP)
+         ========================================================================= -->
+    <section class="section-panel" id="sec-apps">
+      <div class="section-panel-header">
+        <div>
+          <h2 class="section-h2">[ 02. ПРИЛОЖЕНИЯ ПРОЕКТА ]</h2>
+          <div class="section-subtext">Дистанционное управление с телефона по Bluetooth и кроссплатформенная среда анализа на ПК</div>
+        </div>
+      </div>
+
+      <div class="apps-two-columns">
+        
+        <!-- CARD 1: ANDROID APP -->
+        <div class="app-box-square">
+          <div class="app-box-top">
+            <div class="app-badge-mono">[ ANDROID BLE 5.0 ]</div>
+            <h3 class="app-h3">GHOSTRF Studio Mobile (Android)</h3>
+            <div class="app-tech-line">Kotlin • Nordic UART Service • Попиксельный рендеринг OledCanvasView</div>
+
+            <ul class="app-features-ul">
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Прямой стриминг экрана:</strong> попиксельная трансляция OLED SSD1306 128x64 в реальном времени.</span>
+              </li>
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Аппаратный пульт:</strong> кнопки ВВЕРХ, ВНИЗ, ОК, МЕНЮ с обратным откликом.</span>
+              </li>
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Быстрый выбор режима:</strong> мгновенное переключение экрана и радиорежима на устройстве в 1 клик.</span>
+              </li>
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Web Bluetooth PWA:</strong> можно запускать в Google Chrome на телефоне даже без установки APK!</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <a href="GHOSTRF-Studio.apk" download class="btn-square btn-square-primary" style="width:100%; margin-bottom:8px;">
+              [ DOWNLOAD: GHOSTRF-STUDIO.APK (6.6 МБ) ]
+            </a>
+            <div style="font-size:10px; color:var(--c-gray-muted); text-align:center;">
+              Android 7.0+ (API 24+) • Собрано в Release
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: QT6 DESKTOP STUDIO -->
+        <div class="app-box-square">
+          <div class="app-box-top">
+            <div class="app-badge-mono">[ LINUX / WINDOWS / MACOS ]</div>
+            <h3 class="app-h3">GHOSTRF Studio Desktop (Qt 6 / C++)</h3>
+            <div class="app-tech-line">C++17 • Qt 6 CMake • USB-Serial • Sub-GHz .sub формат</div>
+
+            <ul class="app-features-ul">
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Менеджер сохранённых сигналов:</strong> чтение Flash NVS, декодирование KeeLoq, бэкап в JSON.</span>
+              </li>
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Поддержка Sub-GHz ключей:</strong> импорт и экспорт радиоключей в формат <code>.sub</code>.</span>
+              </li>
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Цифровой осциллограф:</strong> масштабирование колёсиком мыши, точные тайминги импульсов в микросекундах.</span>
+              </li>
+              <li>
+                <span class="bullet-square">[#]</span>
+                <span><strong>Генератор и Replay:</strong> воспроизведение произвольных RAW-последовательностей и тестовой несущей.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="code-box-square">
+              <div style="font-size:9px; color:var(--c-gray-muted); margin-bottom:4px;">[ КОМАНДА СБОРКИ В ТЕРМИНАЛЕ ]:</div>
+              <code>cmake -B build -S . &amp;&amp; cmake --build build -j$(nproc)</code>
+            </div>
+            <div style="font-size:10px; color:var(--c-gray-muted); text-align:center; margin-top:8px;">
+              Исходный код приложения в директории <code>gui/</code>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 03: FIRMWARE & WEBSERIAL IN-BROWSER FLASHER
+         ========================================================================= -->
+    <section class="section-panel" id="sec-firmware">
+      <div class="section-panel-header">
+        <div>
+          <h2 class="section-h2">[ 03. ПРОШИВКА ESP32-C3 ЧЕРЕЗ БРАУЗЕР (WEBSERIAL) ]</h2>
+          <div class="section-subtext">Установка официальной прошивки в 1 клик без Python и командной строки</div>
+        </div>
+      </div>
+
+      <div class="flasher-two-cols">
+        
+        <!-- Step Instructions -->
+        <div class="instruction-step-box">
+          <div class="step-row-square">
+            <div class="step-num-square">01</div>
+            <div>
+              <div class="step-text-title">[ ПОДКЛЮЧИТЕ ESP32-C3 ПО USB ]</div>
+              <div class="step-text-desc">Используйте кабель с линиями передачи данных (Data). Устройство определится в системе как USB-Serial.</div>
+            </div>
+          </div>
+
+          <div class="step-row-square">
+            <div class="step-num-square">02</div>
+            <div>
+              <div class="step-text-title">[ РЕЖИМ ЗАГРУЗЧИКА (BOOTLOADER) ]</div>
+              <div class="step-text-desc">Если порт не отвечает: зажмите кнопку <strong>BOOT</strong>, кратковременно нажмите <strong>RESET</strong> и отпустите <strong>BOOT</strong>.</div>
+            </div>
+          </div>
+
+          <div class="step-row-square">
+            <div class="step-num-square">03</div>
+            <div>
+              <div class="step-text-title">[ НАЖМИТЕ КНОПКУ ПРОШИВКИ ]</div>
+              <div class="step-text-desc">Выберите порт в появившемся окне браузера и подтвердите установку прошивки.</div>
+            </div>
+          </div>
+
+          <div>
+            <a href="firmware_merged.bin" download class="btn-square" style="width:100%;">
+              [ FIRMWARE: FIRMWARE_MERGED.BIN (393 КБ, OFFSET 0x0) ]
+            </a>
+          </div>
+        </div>
+
+        <!-- Flasher Widget -->
+        <div class="flasher-action-box">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:12px;">
+              <span>[ ESP WEB TOOLS WEBSERIAL ENGINE ]</span>
+              <span>[ ESP32-C3 RISC-V ]</span>
+            </div>
+
+            <!-- In-Browser Flasher Button -->
+            <esp-web-install-button manifest="manifest.json">
+              <button slot="activate" class="btn-square btn-square-primary" style="width:100%; padding:14px; font-size:13px;">
+                [ INSTALL: ПРОШИТЬ НА ESP32-C3 ]
+              </button>
+              <span slot="unsupported" style="display:block; margin-top:8px; font-size:11px; color:#aaa; text-align:center;">
+                [ NOTICE: WebSerial поддерживается в Chrome, Edge, Brave и Яндекс на ПК ]
+              </span>
+              <span slot="not-allowed" style="display:block; margin-top:8px; font-size:11px; color:#aaa; text-align:center;">
+                [ NOTICE: Доступ к порту заблокирован (требуется localhost или HTTPS) ]
+              </span>
+            </esp-web-install-button>
+
+            <!-- Terminal Output Box -->
+            <div class="terminal-square-log" id="termLog">
+              <div class="term-line highlight">[SYS] WebSerial Engine initialized.</div>
+              <div class="term-line">[IMG] Binary image: firmware_merged.bin (Size: 393 KB)</div>
+              <div class="term-line">[MCU] Target platform: ESP32-C3 SuperMini 160MHz</div>
+              <div class="term-line">[TIP] Нажмите кнопку выше для автоматической записи прошивки.</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button id="btnWebSerialConnect" class="btn-square" style="flex:1;">[ ТЕСТ COM-ПОРТА ]</button>
+            <button id="btnWebSerialFlash" class="btn-square" style="flex:1;" disabled>[ ЗАПИСЬ ОБРАЗА ]</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 04: HARDWARE PINOUT MATRIX
+         ========================================================================= -->
+    <section class="section-panel" id="sec-hardware">
+      <div class="section-panel-header">
+        <div>
+          <h2 class="section-h2">[ 04. СХЕМА ПОДКЛЮЧЕНИЯ И РАСПИНОВКА ПЛАТЫ ]</h2>
+          <div class="section-subtext">Проверенная разводка ESP32-C3 SuperMini + CC1101 + OLED SSD1306</div>
+        </div>
+      </div>
+
+      <div class="warning-power-square">
+        [ NOTICE: ПИТАНИЕ МОДУЛЯ CC1101 СТРОГО 3.3V! ПОДАЧА 5V ПОВРЕДИТ ЧИП! ]
+      </div>
+
+      <div style="text-align:center; margin: 15px 0;">
+        <img src="ghostrf_wiring_diagram.png" alt="Принципиальная схема GHOSTRF" style="max-width:100%; border:1px solid var(--c-gray-border); border-radius:4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="pinout-table-square">
+          <thead>
+            <tr>
+              <th>КОМПОНЕНТ</th>
+              <th>ВЫВОД МОДУЛЯ</th>
+              <th>ПИН ESP32-C3</th>
+              <th>ШИНА / РЕЖИМ</th>
+              <th>НАЗНАЧЕНИЕ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>OLED SSD1306</strong></td>
+              <td>SDA</td>
+              <td><span class="pin-tag">GPIO 8</span></td>
+              <td>I2C Data</td>
+              <td>Аппаратная шина I2C Data</td>
+            </tr>
+            <tr>
+              <td><strong>OLED SSD1306</strong></td>
+              <td>SCL</td>
+              <td><span class="pin-tag">GPIO 9</span></td>
+              <td>I2C Clock</td>
+              <td>Аппаратная шина I2C Clock</td>
+            </tr>
+            <tr>
+              <td><strong>CC1101 Радиомодуль</strong></td>
+              <td>SCK / CLK</td>
+              <td><span class="pin-tag">GPIO 4</span></td>
+              <td>SPI SCK</td>
+              <td>Тактирование шины SPI</td>
+            </tr>
+            <tr>
+              <td><strong>CC1101 Радиомодуль</strong></td>
+              <td>MISO / SO</td>
+              <td><span class="pin-tag">GPIO 5</span></td>
+              <td>SPI MISO</td>
+              <td>Приём данных от CC1101 к ESP32</td>
+            </tr>
+            <tr>
+              <td><strong>CC1101 Радиомодуль</strong></td>
+              <td>MOSI / SI</td>
+              <td><span class="pin-tag">GPIO 6</span></td>
+              <td>SPI MOSI</td>
+              <td>Передача данных в CC1101</td>
+            </tr>
+            <tr>
+              <td><strong>CC1101 Радиомодуль</strong></td>
+              <td>CSN / SS</td>
+              <td><span class="pin-tag">GPIO 7</span></td>
+              <td>SPI CSN</td>
+              <td>Выбор кристалла CC1101 (активный LOW)</td>
+            </tr>
+            <tr>
+              <td><strong>CC1101 Радиомодуль</strong></td>
+              <td>GDO0</td>
+              <td><span class="pin-tag">GPIO 3</span></td>
+              <td>ISR Digital I/O</td>
+              <td>Аппаратные прерывания RX/TX (микросекундный захват)</td>
+            </tr>
+            <tr>
+              <td><strong>Кнопка ВВЕРХ</strong></td>
+              <td>Кнопка -&gt; GND</td>
+              <td><span class="pin-tag">GPIO 0</span></td>
+              <td>INPUT_PULLUP</td>
+              <td>Навигация вверх / Увеличение значений</td>
+            </tr>
+            <tr>
+              <td><strong>Кнопка ОК</strong></td>
+              <td>Кнопка -&gt; GND</td>
+              <td><span class="pin-tag">GPIO 1</span></td>
+              <td>INPUT_PULLUP</td>
+              <td>Короткое: ОК / Длинное (&gt;0.75с): Главное меню</td>
+            </tr>
+            <tr>
+              <td><strong>Кнопка ВНИЗ</strong></td>
+              <td>Кнопка -&gt; GND</td>
+              <td><span class="pin-tag">GPIO 10</span></td>
+              <td>INPUT_PULLUP</td>
+              <td>Навигация вниз / Уменьшение значений</td>
+            </tr>
+            <tr>
+              <td><strong>Вольтметр АКБ</strong></td>
+              <td>Делитель 100к + 100к</td>
+              <td><span class="pin-tag">GPIO 2</span></td>
+              <td>ADC1_CH2 (0-4.2V)</td>
+              <td>Замер уровня заряда Li-Po 3.7V (16x oversampling)</td>
+            </tr>
+            <tr>
+              <td><strong>Свободные пины</strong></td>
+              <td>UART0 / Expansion</td>
+              <td><span class="pin-tag">GPIO 20, 21</span></td>
+              <td>I/O Free</td>
+              <td>Свободны для пользовательских модулей / датчиков</td>
+            </tr>
+            <tr>
+              <td><strong>Модуль TP4056 & АКБ</strong></td>
+              <td>OUT+ / OUT-</td>
+              <td><span class="pin-tag pin-power">5V & GND</span></td>
+              <td>USB-C Charger & Protect</td>
+              <td>Питание всей системы от 3.7V аккумулятора</td>
+            </tr>
+            <tr>
+              <td><strong>Питание</strong></td>
+              <td>VCC (OLED + CC1101)</td>
+              <td><span class="pin-tag pin-power">3.3V</span></td>
+              <td>Power</td>
+              <td>Строго 3.3 В (от внутреннего LDO ESP32-C3)</td>
+            </tr>
+            <tr>
+              <td><strong>Питание</strong></td>
+              <td>GND (Общая земля)</td>
+              <td><span class="pin-tag pin-power">GND</span></td>
+              <td>Ground</td>
+              <td>Общая масса для CC1101, OLED, кнопок и АКБ</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background-color:var(--c-dark-1); border:1px solid var(--c-gray-border); padding:10px 12px; font-size:11px;">
+        <strong>Свободные контакты:</strong> GPIO 20 и GPIO 21 свободны для ваших модификаций. Внутренний USB-JTAG (GPIO 18/19) используется для прошивки и отладки, обеспечивая полноценную работу RF (Sub-GHz), Wi-Fi/BLE (2.4GHz) и автономного питания от Li-Po с контролем напряжения (GPIO 2).
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Strict Square Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand-side">
+        <div class="mascot-pixel-box" style="width:30px; height:30px;">
+          <img src="ghost_pixel_white.png" alt="Ghost Logo" class="mascot-pixel-img">
+        </div>
+        <div>
+          <div style="font-weight:800; font-size:12px;">[ GHOSTRF ]</div>
+          <div style="font-size:10px; color:var(--c-gray-muted);">ESP32-C3 + CC1101 SUB-GHZ SUITE</div>
+        </div>
+      </div>
+
+      <div class="footer-links-side">
+        <a href="GHOSTRF-Studio.apk" download class="footer-link-item">[ СКАЧАТЬ ANDROID APK ]</a>
+        <a href="firmware_merged.bin" download class="footer-link-item">[ ПРОШИВКА .BIN ]</a>
+        <a href="logo.svg" download class="footer-link-item">[ ЛОГОТИП (SVG) ]</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

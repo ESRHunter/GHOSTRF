@@ -1,0 +1,1872 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <!-- ============================================================ -->
+    <!-- ONBOARDING & DEVICE CONNECTION SCREEN -->
+    <!-- ============================================================ -->
+    <ScrollView
+        android:id="@+id/layoutConnectScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:fillViewport="true"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center_horizontal">
+
+            <!-- Ghost Emblem -->
+            <ImageView
+                android:id="@+id/ivGhostConnectLogo"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ghost_logo_white"
+                android:contentDescription="GHOSTRF"
+                android:scaleType="fitCenter"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Cyber Header Badge -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[ GHOSTRF // SUB-1GHz ]"
+                android:textColor="#00FF66"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GHOSTRF STUDIO"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Аппаратный терминал управления и анализатором радиоэфира"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:gravity="center"
+                android:fontFamily="monospace"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Stylized Device Chassis Graphic -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/surface"
+                android:padding="14dp"
+                android:layout_marginBottom="20dp">
+
+                <!-- Chassis Status Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="ESP32-C3 SUPERMINI"
+                        android:textColor="#AAAAAA"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CC1101 SUB-1GHz"
+                        android:textColor="#00FF66"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <!-- OLED Virtual Screen Preview Box (Real 128x64 display rendering) -->
+                <com.rfhub.studio.OledCanvasView
+                    android:id="@+id/chassisOledCanvas"
+                    android:layout_width="match_parent"
+                    android:layout_height="96dp"
+                    android:background="@color/black" />
+
+                <!-- Chassis Hardware Button Mockups -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="[ ◄ PREV ]   [ ▲ UP ]   [ ● OK ]   [ ▼ DOWN ]   [ ► NEXT ]"
+                        android:textColor="#666666"
+                        android:textSize="9sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Scanning Indicator Banner -->
+            <LinearLayout
+                android:id="@+id/layoutScanIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#111111"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ProgressBar
+                        android:id="@+id/pbScan"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:indeterminate="true"
+                        android:indeterminateTint="@color/white"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvScanStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="[ ⟳ ПОИСК GHOSTRF В ЭФИРЕ BLE... ]"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvScanHelpHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Убедитесь, что питание устройства включено и в меню (Settings -> BLE: [ENABLED])"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <!-- Found Device Card (Visible once device is discovered) -->
+            <LinearLayout
+                android:id="@+id/cardFoundDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#161616"
+                android:padding="14dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="● "
+                        android:textColor="#00FF66"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvFoundDeviceName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="GHOSTRF"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:fontFamily="monospace" />
+
+                    <TextView
+                        android:id="@+id/tvFoundRssi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-52 dBm [ОТЛИЧНЫЙ]"
+                        android:textColor="#00FF66"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvFoundDeviceMac"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MAC: 84:F7:03:XX:XX:XX • Nordic UART BLE"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginTop="4dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnConnectFound"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="[ ПОДКЛЮЧИТЬ УСТРОЙСТВО ]"
+                    android:textColor="@color/black"
+                    android:background="@drawable/square_btn_primary"
+                    app:backgroundTint="@null"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+
+            <!-- Step Progress Checklist -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/surface"
+                android:padding="12dp"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ЭТАПЫ СОПРЯЖЕНИЯ И ИНИЦИАЛИЗАЦИИ:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tvConnStep1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="[ ○ ] 1. BLE радиомаяк GHOSTRF"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvConnStep2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="[ ○ ] 2. Подключение GATT и согласование MTU 512"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvConnStep3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="[ ○ ] 3. Синхронизация сигналов NVS и стриминга экрана"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <!-- Action Buttons: Retry Scan & Offline Mode -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnRetryScan"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="[ ПОВТОРИТЬ ПОИСК ]"
+                    android:textColor="@color/white"
+                    android:background="@drawable/square_btn_bg"
+                    app:backgroundTint="@null"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginEnd="6dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnOfflineMode"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="[ АВТОНОМНЫЙ РЕЖИМ ]"
+                    android:textColor="@color/white"
+                    android:background="@drawable/square_btn_bg"
+                    app:backgroundTint="@null"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Автономный режим позволяет просматривать базу сигналов, генерировать тайминги и настраивать пресеты без подключения к плате."
+                android:textColor="#555555"
+                android:textSize="9sp"
+                android:gravity="center"
+                android:fontFamily="monospace"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ============================================================ -->
+    <!-- MAIN STUDIO WORKSPACE (Shown after connected or offline mode) -->
+    <!-- ============================================================ -->
+    <LinearLayout
+        android:id="@+id/layoutMainStudio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Top Persistent Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/surface"
+            android:padding="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ghost_logo_white"
+                android:contentDescription="GHOSTRF"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="GHOSTRF STUDIO"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[ BLE: ОТКЛЮЧЕНО ]"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="6dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnConnect"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="[ ПОДКЛЮЧИТЬ ]"
+                android:textColor="@color/black"
+                android:background="@drawable/square_btn_primary"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTelemetry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="[ УСТРОЙСТВО НЕ НАЙДЕНО ]"
+            android:textColor="@color/text_secondary"
+            android:textSize="9sp"
+            android:fontFamily="monospace"
+            android:layout_marginTop="2dp" />
+    </LinearLayout>
+
+    <!-- Navigation Tab Bar -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0A0A0A"
+        android:scrollbars="none"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnTabDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="[ 1. ДИСПЛЕЙ ]"
+                android:textColor="@color/black"
+                android:background="@drawable/square_btn_tab_active"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="3dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnTabSignals"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="[ 2. СИГНАЛЫ ]"
+                android:textColor="@color/white"
+                android:background="@drawable/square_btn_tab_inactive"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="3dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnTabTransmitter"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="[ 3. ПЕРЕДАТЧИК ]"
+                android:textColor="@color/white"
+                android:background="@drawable/square_btn_tab_inactive"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="3dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnTabSniffer"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="[ 4. СНИФФЕР ]"
+                android:textColor="@color/white"
+                android:background="@drawable/square_btn_tab_inactive"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="3dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnTabConsole"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:text="[ 5. КОНСОЛЬ ]"
+                android:textColor="@color/white"
+                android:background="@drawable/square_btn_tab_inactive"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Main Container Frame for Tabs -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- ============================================================ -->
+        <!-- TAB 1: ДИСПЛЕЙ И ПУЛЬТ -->
+        <!-- ============================================================ -->
+        <ScrollView
+            android:id="@+id/tabDisplayContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="6dp">
+
+                <!-- OLED Screen Container -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/surface"
+                    android:padding="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="МОНИТОР ДИСПЛЕЯ [ OLED SSD1306 128x64 ]"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <com.rfhub.studio.OledCanvasView
+                        android:id="@+id/oledView"
+                        android:layout_width="match_parent"
+                        android:layout_height="170dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="6dp">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnToggleStream"
+                            android:layout_width="0dp"
+                            android:layout_height="34dp"
+                            android:layout_weight="1"
+                            android:text="[ СТРИМ: ВКЛ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="4dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnInvert"
+                            android:layout_width="0dp"
+                            android:layout_height="34dp"
+                            android:layout_weight="1"
+                            android:text="[ ИНВЕРСИЯ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="4dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnGrid"
+                            android:layout_width="0dp"
+                            android:layout_height="34dp"
+                            android:layout_weight="1"
+                            android:text="[ СЕТКА: ВКЛ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Hardware Remote Control D-pad -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/surface"
+                    android:padding="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="АППАРАТНЫЙ ПУЛЬТ УПРАВЛЕНИЯ"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnUp"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="▲ ВВЕРХ"
+                        android:textColor="@color/white"
+                        android:background="@drawable/square_btn_bg"
+                        app:backgroundTint="@null"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnOk"
+                        android:layout_width="150dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="3dp"
+                        android:text="● ОК"
+                        android:textColor="@color/black"
+                        android:background="@drawable/square_btn_primary"
+                        app:backgroundTint="@null"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:fontFamily="monospace" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnDown"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="3dp"
+                        android:text="▼ ВНИЗ"
+                        android:textColor="@color/white"
+                        android:background="@drawable/square_btn_bg"
+                        app:backgroundTint="@null"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnHoldMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="4dp"
+                        android:text="[ ⮌ ВОЗВРАТ В МЕНЮ ]"
+                        android:textColor="@color/white"
+                        android:background="@drawable/square_btn_bg"
+                        app:backgroundTint="@null"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <!-- Quick Mode Selection -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/surface"
+                    android:padding="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="БЫСТРЫЙ ВЫБОР РЕЖИМА (ПЕРЕКЛЮЧЕНИЕ ЭКРАНА ESP32)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="2"
+                        android:rowCount="4">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeMain"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 1. МЕНЮ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeRx"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 2. ПРИЕМНИК RX ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeRaw"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 3. RAW СНИФФЕР ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeSpectrum"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 4. СПЕКТР ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeFreq"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 5. ЧАСТОТОМЕР ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeTx"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 6. ПУЛЬТ TX ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeCarrier"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 7. ГЕНЕРАТОР/ГЛУШ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnModeSettings"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_columnWeight="1"
+                            android:layout_margin="2dp"
+                            android:text="[ 8. НАСТРОЙКИ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+                    </GridLayout>
+                </LinearLayout>
+
+                <!-- Radio CC1101 Config Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="6dp"
+                    android:background="@color/surface"
+                    android:padding="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ПАРАМЕТРЫ РАДИО CC1101 (RX/TX)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Spinner
+                            android:id="@+id/spFreq"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg"
+                            android:layout_marginEnd="3dp" />
+
+                        <Spinner
+                            android:id="@+id/spPower"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg"
+                            android:layout_marginEnd="3dp" />
+
+                        <Spinner
+                            android:id="@+id/spSquelch"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnApplyRadio"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="2"
+                            android:text="[ СОХРАНИТЬ В NVS ]"
+                            android:textColor="@color/black"
+                            android:background="@drawable/square_btn_primary"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnRebootEsp"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:text="[ REBOOT ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_danger"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ============================================================ -->
+        <!-- TAB 2: СОХРАНЕННЫЕ СИГНАЛЫ -->
+        <!-- ============================================================ -->
+        <ScrollView
+            android:id="@+id/tabSignalsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="6dp">
+
+                <!-- Signals Action Toolbar -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:background="@color/surface"
+                    android:padding="4dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnReloadSignals"
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:text="[ ОБНОВИТЬ ]"
+                            android:textColor="@color/black"
+                            android:background="@drawable/square_btn_primary"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnAddSignalDialog"
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:text="[ + ДОБАВИТЬ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnDeleteSignal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:text="[ УДАЛИТЬ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_danger"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnClearSignals"
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:text="[ ОЧИСТИТЬ ВСЕ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_danger"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnExportJson"
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:text="[ БЭКАП JSON ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnExportSub"
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:text="[ ЭКСПОРТ .SUB ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <!-- Signals List Header -->
+                <TextView
+                    android:id="@+id/tvSignalsCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="СПИСОК СОХРАНЕННЫХ СИГНАЛОВ (0)"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Dynamic Container for Signal Items -->
+                <LinearLayout
+                    android:id="@+id/llSignalsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <!-- Selected Signal Inspector Card -->
+                <LinearLayout
+                    android:id="@+id/cardSignalInspector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/surface"
+                    android:padding="6dp"
+                    android:layout_marginTop="6dp">
+
+                    <TextView
+                        android:id="@+id/tvInspectorTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="ИНСПЕКТОР СИГНАЛА: [ ВЫБЕРИТЕ СИГНАЛ ]"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvInspectorParams"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Частота: — | Протокол: — | Код: —"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace" />
+
+                    <TextView
+                        android:id="@+id/tvInspectorBin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="BIN: —"
+                        android:textColor="@color/white"
+                        android:textSize="9sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginTop="2dp" />
+
+                    <!-- Waveform Display for Selected Signal -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ОСЦИЛЛОГРАММА И ФОРМА ИМПУЛЬСОВ:"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="9sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="2dp" />
+
+                    <com.rfhub.studio.WaveformView
+                        android:id="@+id/waveformSaved"
+                        android:layout_width="match_parent"
+                        android:layout_height="90dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSavedWaveZoomIn"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:text="[ + ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="2dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSavedWaveZoomOut"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:text="[ - ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="2dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSavedWaveReset"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:text="[ СБРОС ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="2dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSavedWaveInvert"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:text="[ ИНВЕРТ ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+
+                    <!-- Transmission Controls -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="6dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ПОВТОРЫ:"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="4dp" />
+
+                        <Spinner
+                            android:id="@+id/spSavedRepeats"
+                            android:layout_width="70dp"
+                            android:layout_height="36dp"
+                            android:background="@drawable/square_btn_bg"
+                            android:layout_marginEnd="4dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnTransmitSaved"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:text="[ ПЕРЕДАТЬ В ЭФИР ]"
+                            android:textColor="@color/black"
+                            android:background="@drawable/square_btn_primary"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ============================================================ -->
+        <!-- TAB 3: ПЕРЕДАТЧИК / ГЕНЕРАТОР -->
+        <!-- ============================================================ -->
+        <ScrollView
+            android:id="@+id/tabTransmitterContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="6dp">
+
+                <!-- Sub-tab switchers -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@color/surface"
+                    android:padding="3dp">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSubTabFixed"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:text="[ ФИКС. КОД ]"
+                        android:textColor="@color/black"
+                        android:background="@drawable/square_btn_tab_active"
+                        app:backgroundTint="@null"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginEnd="2dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSubTabRaw"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:text="[ RAW ИМПУЛЬСЫ ]"
+                        android:textColor="@color/white"
+                        android:background="@drawable/square_btn_tab_inactive"
+                        app:backgroundTint="@null"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginEnd="2dp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSubTabCarrier"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:text="[ ДЖЕММЕР/НЕСУЩ. ]"
+                        android:textColor="@color/white"
+                        android:background="@drawable/square_btn_tab_inactive"
+                        app:backgroundTint="@null"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <!-- 1. FIXED GENERATOR CONTAINER -->
+                <LinearLayout
+                    android:id="@+id/llGenFixedContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/surface"
+                    android:padding="6dp"
+                    android:layout_marginTop="6dp"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ПАРАМЕТРЫ ФИКСИРОВАННОГО КОДА"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <EditText
+                        android:id="@+id/etFixedName"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:background="@drawable/square_edit_bg"
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:hint="Имя сигнала (напр. Ворота)"
+                        android:textColorHint="@color/text_secondary"
+                        android:text="Custom Fixed" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <Spinner
+                            android:id="@+id/spFixedFreq"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg"
+                            android:layout_marginEnd="3dp" />
+
+                        <Spinner
+                            android:id="@+id/spFixedProto"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <EditText
+                            android:id="@+id/etFixedHex"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_edit_bg"
+                            android:textColor="@color/white"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:hint="HEX (0x547A11)"
+                            android:textColorHint="@color/text_secondary"
+                            android:text="0x547A11"
+                            android:layout_marginEnd="3dp" />
+
+                        <EditText
+                            android:id="@+id/etFixedDec"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_edit_bg"
+                            android:textColor="@color/white"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:hint="DEC (5536273)"
+                            android:textColorHint="@color/text_secondary"
+                            android:inputType="number"
+                            android:text="5536273" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <EditText
+                            android:id="@+id/etFixedBitLen"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_edit_bg"
+                            android:textColor="@color/white"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:paddingStart="8dp"
+                            android:hint="Бит (24)"
+                            android:textColorHint="@color/text_secondary"
+                            android:inputType="number"
+                            android:text="24"
+                            android:layout_marginEnd="3dp" />
+
+                        <EditText
+                            android:id="@+id/etFixedPulseLen"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_edit_bg"
+                            android:textColor="@color/white"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:paddingStart="8dp"
+                            android:hint="TE мкс (320)"
+                            android:textColorHint="@color/text_secondary"
+                            android:inputType="number"
+                            android:text="320"
+                            android:layout_marginEnd="3dp" />
+
+                        <Spinner
+                            android:id="@+id/spFixedRepeats"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ПРЕВЬЮ СИНТЕЗИРОВАННОЙ ОСЦИЛЛОГРАММЫ:"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="9sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="2dp" />
+
+                    <com.rfhub.studio.WaveformView
+                        android:id="@+id/waveformGenFixed"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="6dp">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnTxFixed"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="[ ПЕРЕДАТЬ В ЭФИР ]"
+                            android:textColor="@color/black"
+                            android:background="@drawable/square_btn_primary"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSaveFixedToDevice"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="[ СОХРАНИТЬ В NVS ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 2. RAW GENERATOR CONTAINER -->
+                <LinearLayout
+                    android:id="@+id/llGenRawContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/surface"
+                    android:padding="6dp"
+                    android:layout_marginTop="6dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ГЕНЕРАТОР RAW ИМПУЛЬСОВ"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <EditText
+                        android:id="@+id/etRawName"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:background="@drawable/square_edit_bg"
+                        android:textColor="@color/white"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:hint="Имя RAW сигнала"
+                        android:text="Signal RAW" />
+
+                    <!-- Presets -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="4dp">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnRawPresetCame"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:text="[ CAME 12B ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="9sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="2dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnRawPresetNice"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:text="[ NICE FLO ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="9sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="2dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnRawPresetDoorbell"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:text="[ ЗВОНОК ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="9sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/etRawPulses"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/square_edit_bg"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:gravity="top|start"
+                        android:padding="6dp"
+                        android:hint="Импульсы в мкс через пробел или запятую (напр: 320 960 960 320...)"
+                        android:textColorHint="@color/text_secondary" />
+
+                    <com.rfhub.studio.WaveformView
+                        android:id="@+id/waveformGenRaw"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="6dp">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnTxRaw"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="[ ПЕРЕДАТЬ RAW ]"
+                            android:textColor="@color/black"
+                            android:background="@drawable/square_btn_primary"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSaveRawToDevice"
+                            android:layout_width="0dp"
+                            android:layout_height="38dp"
+                            android:layout_weight="1"
+                            android:text="[ СОХРАНИТЬ RAW ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 3. CARRIER / JAMMER CONTAINER -->
+                <LinearLayout
+                    android:id="@+id/llGenCarrierContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/surface"
+                    android:padding="6dp"
+                    android:layout_marginTop="6dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ГЕНЕРАТОР НЕСУЩЕЙ / МАЯК / ДЖЕММЕР"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <Spinner
+                        android:id="@+id/spCarrierMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:background="@drawable/square_btn_bg"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Spinner
+                            android:id="@+id/spCarrierFreq"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg"
+                            android:layout_marginEnd="3dp" />
+
+                        <Spinner
+                            android:id="@+id/spCarrierPower"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/square_btn_bg" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnToggleCarrier"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="8dp"
+                        android:text="[ ВКЛЮЧИТЬ ПЕРЕДАЧУ НЕСУЩЕЙ ]"
+                        android:textColor="@color/white"
+                        android:background="@drawable/square_btn_danger"
+                        app:backgroundTint="@null"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ============================================================ -->
+        <!-- TAB 4: СНИФФЕР ЭФИРА -->
+        <!-- ============================================================ -->
+        <ScrollView
+            android:id="@+id/tabSnifferContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="6dp">
+
+                <!-- Sniffer controls -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/surface"
+                    android:padding="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="УПРАВЛЕНИЕ СНИФФЕРОМ ЭФИРА"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnStartSnifferFixed"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:text="[ СТАРТ RX ]"
+                            android:textColor="@color/black"
+                            android:background="@drawable/square_btn_primary"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnStartSnifferRaw"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:text="[ СТАРТ RAW ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnStopSniffer"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:text="[ СТОП ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_danger"
+                            app:backgroundTint="@null"
+                            android:textSize="10sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Captured packets header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="6dp">
+
+                    <TextView
+                        android:id="@+id/tvSnifferCount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="ПОЙМАННЫЕ ПАКЕТЫ (0)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnClearSnifferList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="28dp"
+                        android:text="[ ОЧИСТИТЬ ]"
+                        android:textColor="@color/white"
+                        android:background="@drawable/square_btn_bg"
+                        app:backgroundTint="@null"
+                        android:textSize="9sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <!-- Dynamic list of sniffer packets -->
+                <LinearLayout
+                    android:id="@+id/llSnifferPackets"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="4dp" />
+
+                <!-- Sniffer Packet Details & Waveform -->
+                <LinearLayout
+                    android:id="@+id/cardSnifferDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/surface"
+                    android:padding="6dp"
+                    android:layout_marginTop="6dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvSniffPacketTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="ДЕТАЛИ ПАКЕТА"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace" />
+
+                    <com.rfhub.studio.WaveformView
+                        android:id="@+id/waveformSniffer"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="6dp">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnReplaySnifferPacket"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:text="[ REPLAY TX ]"
+                            android:textColor="@color/black"
+                            android:background="@drawable/square_btn_primary"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace"
+                            android:layout_marginEnd="3dp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSaveSnifferPacket"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:text="[ СОХРАНИТЬ В NVS ]"
+                            android:textColor="@color/white"
+                            android:background="@drawable/square_btn_bg"
+                            app:backgroundTint="@null"
+                            android:textSize="11sp"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ============================================================ -->
+        <!-- TAB 5: BLE КОНСОЛЬ -->
+        <!-- ============================================================ -->
+        <LinearLayout
+            android:id="@+id/tabConsoleContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="6dp"
+            android:visibility="gone">
+
+            <!-- Console Toolbar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnClearConsole"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="[ ОЧИСТИТЬ ]"
+                    android:textColor="@color/white"
+                    android:background="@drawable/square_btn_bg"
+                    app:backgroundTint="@null"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginEnd="3dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnConsolePing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="[ PING ]"
+                    android:textColor="@color/white"
+                    android:background="@drawable/square_btn_bg"
+                    app:backgroundTint="@null"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginEnd="3dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnConsoleReboot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="[ REBOOT ]"
+                    android:textColor="@color/white"
+                    android:background="@drawable/square_btn_danger"
+                    app:backgroundTint="@null"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <ScrollView
+                android:id="@+id/scrollConsole"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="#0A0A0A"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:padding="6dp">
+
+                <TextView
+                    android:id="@+id/tvConsoleLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace" />
+            </ScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etConsoleCmd"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/square_edit_bg"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:hint="Команда (PING, GET_CONFIG, TX_SAVED 0...)"
+                    android:textColorHint="@color/text_secondary"
+                    android:layout_marginEnd="4dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnSendConsoleCmd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="[ ОТПРАВИТЬ ]"
+                    android:textColor="@color/black"
+                    android:background="@drawable/square_btn_primary"
+                    app:backgroundTint="@null"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#141414">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvDialogTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="РЕДАКТОР СИГНАЛА"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ИМЯ СИГНАЛА:"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp"
+            android:fontFamily="monospace" />
+
+        <EditText
+            android:id="@+id/etDialogName"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:background="@drawable/square_edit_bg"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:fontFamily="monospace"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:hint="Имя сигнала"
+            android:text="New Signal"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ТИП СИГНАЛА:"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp"
+            android:fontFamily="monospace" />
+
+        <Spinner
+            android:id="@+id/spDialogType"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:background="@drawable/square_btn_bg"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="6dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="3dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ЧАСТОТА:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace" />
+
+                <Spinner
+                    android:id="@+id/spDialogFreq"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/square_btn_bg" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ПРОТОКОЛ:"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace" />
+
+                <Spinner
+                    android:id="@+id/spDialogProto"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:background="@drawable/square_btn_bg" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Fixed code fields -->
+        <LinearLayout
+            android:id="@+id/llDialogFixedFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+
+                <EditText
+                    android:id="@+id/etDialogHex"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/square_edit_bg"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="8dp"
+                    android:hint="HEX (0x547A11)"
+                    android:text="0x547A11"
+                    android:layout_marginEnd="3dp" />
+
+                <EditText
+                    android:id="@+id/etDialogDec"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/square_edit_bg"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="8dp"
+                    android:hint="DEC"
+                    android:inputType="number"
+                    android:text="5536273" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+
+                <EditText
+                    android:id="@+id/etDialogBitLen"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/square_edit_bg"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="8dp"
+                    android:hint="Бит (24)"
+                    android:inputType="number"
+                    android:text="24"
+                    android:layout_marginEnd="3dp" />
+
+                <EditText
+                    android:id="@+id/etDialogPulseLen"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/square_edit_bg"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="8dp"
+                    android:hint="TE мкс (320)"
+                    android:inputType="number"
+                    android:text="320"
+                    android:layout_marginEnd="3dp" />
+
+                <EditText
+                    android:id="@+id/etDialogRepeats"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/square_edit_bg"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="8dp"
+                    android:hint="Повторы (5)"
+                    android:inputType="number"
+                    android:text="5" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- RAW pulses field -->
+        <LinearLayout
+            android:id="@+id/llDialogRawFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ИМПУЛЬСЫ (мкс):"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                android:fontFamily="monospace" />
+
+            <EditText
+                android:id="@+id/etDialogRawPulses"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/square_edit_bg"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:gravity="top|start"
+                android:padding="6dp"
+                android:hint="Импульсы в мкс через пробел"
+                android:layout_marginBottom="6dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ОСЦИЛЛОГРАММА:"
+            android:textColor="@color/text_secondary"
+            android:textSize="9sp"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="2dp" />
+
+        <com.rfhub.studio.WaveformView
+            android:id="@+id/waveformDialog"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDialogTestTx"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="[ ТЕСТ TX ]"
+                android:textColor="@color/white"
+                android:background="@drawable/square_btn_bg"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="3dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDialogSave"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="[ СОХРАНИТЬ ]"
+                android:textColor="@color/black"
+                android:background="@drawable/square_btn_primary"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="3dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDialogCancel"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:text="[ ОТМЕНА ]"
+                android:textColor="@color/white"
+                android:background="@drawable/square_btn_bg"
+                app:backgroundTint="@null"
+                android:textSize="11sp"
+                android:fontFamily="monospace" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/assets">
+    <file alias="ghost_green.png">src/assets/ghost_logo_green.png</file>
+    <file alias="ghost_white.png">src/assets/ghost_logo_white.png</file>
+    <file alias="oled_splash.png">src/assets/oled_splash.png</file>
+</qresource>
+</RCC>

@@ -1,0 +1,34 @@
+# PlatformIO & ESP32 builds
+.pio/
+.pioenvs/
+.piolibdeps/
+*.bin.elf
+*.bin.hex
+
+# Desktop C++ CMake Build
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.o
+*.a
+*.so
+
+# Android Gradle & IDE
+android/RFHubMobile/.gradle/
+android/RFHubMobile/build/
+android/RFHubMobile/app/build/
+android/RFHubMobile/.kotlin/
+android/RFHubMobile/local.properties
+.gradle/
+*.iml
+
+# IDE and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*~
+.DS_Store
+*.tmp
+*.log

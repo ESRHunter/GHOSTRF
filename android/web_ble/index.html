@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GHOSTRF STUDIO</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Header -->
+        <header class="top-bar">
+            <div class="logo">GHOSTRF STUDIO</div>
+            <div class="status-badge" id="statusBadge">[ BLE: ОТКЛЮЧЕНО ]</div>
+            <button id="btnConnect" class="btn btn-primary">[ ПОДКЛЮЧИТЬ ]</button>
+        </header>
+
+        <!-- OLED Screen Monitor -->
+        <section class="card">
+            <div class="card-title">МОНИТОР ДИСПЛЕЯ [ OLED SSD1306 128x64 ]</div>
+            <div class="oled-wrapper">
+                <canvas id="oledCanvas" width="256" height="128"></canvas>
+            </div>
+            <div class="btn-row">
+                <button id="btnStream" class="btn">[ СТРИМ: ВКЛ ]</button>
+                <button id="btnInvert" class="btn">[ ИНВЕРСИЯ ]</button>
+                <button id="btnGrid" class="btn">[ СЕТКА ]</button>
+            </div>
+        </section>
+
+        <!-- Hardware Remote Control D-pad -->
+        <section class="card">
+            <div class="card-title">АППАРАТНЫЙ ПУЛЬТ УПРАВЛЕНИЯ</div>
+            <div class="dpad-container">
+                <button id="btnUp" class="btn dpad-btn">[ ▲ ВВЕРХ ]</button>
+                <button id="btnOk" class="btn btn-primary dpad-btn">[ ● ОК ]</button>
+                <button id="btnDown" class="btn dpad-btn">[ ▼ ВНИЗ ]</button>
+                <button id="btnMenu" class="btn dpad-btn wide">[ ⮌ ВОЗВРАТ В МЕНЮ ]</button>
+            </div>
+        </section>
+
+        <!-- Quick Mode Selection -->
+        <section class="card">
+            <div class="card-title">БЫСТРЫЙ ВЫБОР РЕЖИМА (ПЕРЕКЛЮЧЕНИЕ ЭКРАНА)</div>
+            <div class="grid-2col">
+                <button class="btn btn-mode" data-mode="MAIN">[ 1. МЕНЮ ]</button>
+                <button class="btn btn-mode" data-mode="RX">[ 2. ПРИЕМНИК RX ]</button>
+                <button class="btn btn-mode" data-mode="RAW">[ 3. RAW СНИФФЕР ]</button>
+                <button class="btn btn-mode" data-mode="SPECTRUM">[ 4. СПЕКТРОАНАЛИЗАТОР ]</button>
+                <button class="btn btn-mode" data-mode="FREQ">[ 5. ЧАСТОТОМЕР ]</button>
+                <button class="btn btn-mode" data-mode="TX">[ 6. ПУЛЬТ TX ]</button>
+                <button class="btn btn-mode" data-mode="CARRIER">[ 7. ГЕНЕРАТОР / ГЛУШ. ]</button>
+                <button class="btn btn-mode" data-mode="SETTINGS">[ 8. НАСТРОЙКИ ]</button>
+            </div>
+        </section>
+
+        <!-- Radio Config & Signal Power -->
+        <section class="card">
+            <div class="card-title">ПАРАМЕТРЫ РАДИОМОДУЛЯ И МОЩНОСТЬ (RX/TX)</div>
+            <div class="form-row">
+                <label>ЧАСТОТА:</label>
+                <select id="selFreq">
+                    <option value="0">433.92 МГц</option>
+                    <option value="1">433.07 МГц</option>
+                    <option value="2">433.42 МГц</option>
+                    <option value="3">434.42 МГц</option>
+                    <option value="4">434.77 МГц</option>
+                    <option value="5">315.00 МГц</option>
+                    <option value="6">868.35 МГц</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>МОЩНОСТЬ PA:</label>
+                <select id="selPa">
+                    <option value="0">-30 dBm</option>
+                    <option value="1">-10 dBm</option>
+                    <option value="2">0 dBm</option>
+                    <option value="3" selected>+10 dBm</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>SQUELCH:</label>
+                <select id="selSquelch">
+                    <option value="0">-85 dBm (MAX)</option>
+                    <option value="1" selected>-78 dBm (MID)</option>
+                    <option value="2">-72 dBm (BASE)</option>
+                    <option value="3">-65 dBm (LOW)</option>
+                </select>
+            </div>
+            <button id="btnApplyRadio" class="btn btn-primary" style="margin-top: 8px;">[ ПРИМЕНИТЬ НАСТРОЙКИ РАДИО ]</button>
+        </section>
+
+        <!-- Sniffer Live Log -->
+        <section class="card">
+            <div class="card-title">ЛОГ СООБЩЕНИЙ И ПАКЕТОВ ЭФИРА</div>
+            <div id="logConsole" class="log-console"></div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="bg_dark">#0A0A0A</color>
+    <color name="surface">#141414</color>
+    <color name="border">#333333</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#888888</color>
+    <color name="pixel_on">#FFFFFF</color>
+    <color name="pixel_off">#000000</color>
+    <color name="danger">#D32F2F</color>
+    <color name="danger_dark">#8B0000</color>
+    <color name="success">#2E7D32</color>
+    <color name="accent_green">#00FF66</color>
+</resources>
