@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(RFHubStudio VERSION 1.2.0 LANGUAGES CXX)
+project(GHOSTRFStudio VERSION 1.3.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -31,9 +31,9 @@ set(SOURCES
     resources.qrc
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(GHOSTRF-Studio ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(GHOSTRF-Studio PRIVATE
     src
     src/models
     src/device
@@ -41,7 +41,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src/theme
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(GHOSTRF-Studio PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
@@ -49,7 +49,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 # Binary naming and portable RPATH
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(GHOSTRF-Studio PROPERTIES
     OUTPUT_NAME "GHOSTRF-Studio"
     BUILD_WITH_INSTALL_RPATH TRUE
     INSTALL_RPATH "$ORIGIN/lib"
@@ -57,15 +57,16 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Cross-platform installation and binary properties
 if(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
+    set_target_properties(GHOSTRF-Studio PROPERTIES
         WIN32_EXECUTABLE TRUE
     )
 endif()
 
 if(APPLE)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
+    set_target_properties(GHOSTRF-Studio PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_BUNDLE_NAME "GHOSTRF Studio"
     )
 endif()
+
 

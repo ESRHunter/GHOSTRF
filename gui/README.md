@@ -1,6 +1,7 @@
-# RF-Hub 433 Studio 📡
+# GHOSTRF Studio 📡
 
 **Кроссплатформенное графическое приложение на C++ / Qt 6 для чтения, анализа, генерации, передачи радиосигналов и полного управления портативным мультитулом на ESP32-C3 + CC1101.**
+
 
 ---
 
@@ -65,10 +66,10 @@
 ### Linux (Arch Linux / Manjaro)
 ```bash
 sudo pacman -S cmake ninja gcc qt6-base qt6-serialport
-cd /home/esrhunter/Документы/задачи
+cd /home/esrhunter/Документы/cc1101
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
-./build/RFHubStudio
+./build/gui/GHOSTRF-Studio
 ```
 
 ### Linux (Ubuntu / Debian / Linux Mint)
@@ -78,7 +79,7 @@ sudo apt install build-essential cmake ninja-build qt6-base-dev libqt6serialport
 cd /path/to/project
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
-./build/RFHubStudio
+./build/gui/GHOSTRF-Studio
 ```
 
 ### Windows (MSVC или MinGW)
@@ -87,7 +88,7 @@ cmake --build build -j$(nproc)
 ```cmd
 cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
-.\build\Release\RFHubStudio.exe
+.\build\Release\GHOSTRF-Studio.exe
 ```
 
 ### macOS (Apple Silicon / Intel)
@@ -95,8 +96,9 @@ cmake --build build --config Release
 brew install cmake qt
 cmake -B build -S . -DCMAKE_PREFIX_PATH=$(brew --prefix qt)
 cmake --build build
-open ./build/RFHubStudio.app
+open ./build/GHOSTRF-Studio.app
 ```
+
 
 ---
 

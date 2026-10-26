@@ -170,6 +170,7 @@
 
 ### Запуск приложения:
 ```bash
-./gui/build/RFHubStudio
+./build/gui/GHOSTRF-Studio
 ```
+
 

@@ -1,8 +1,9 @@
 // =========================================================================
-// GHOSTRF / RF-HUB 433 — AUTHENTIC SSD1306 (128x64) OLED EMULATION ENGINE
+// GHOSTRF — AUTHENTIC SSD1306 (128x64) OLED EMULATION ENGINE
 // Complete 1:1 Implementation of src/ui.cpp, src/types.h, and src/main.cpp
 // Includes Sub-GHz Radio, 2.4 GHz Toolkit (Wi-Fi/BLE), and Li-Po Battery Monitor
 // =========================================================================
+
 
 // --- 1. BACKGROUND PIXEL RAIN STREAM (FALLING DIGITAL PARTICLES IN THE VOID) ---
 (function initPixelRain() {

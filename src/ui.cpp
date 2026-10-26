@@ -795,7 +795,9 @@ void ui_update_freq_analyzer(float peakFreq, int peakRssi, bool locked) {
 
 void ui_draw_spectrum_screen(int bandIdx) {
     display.clearDisplay();
-    ui_draw_header("RSSI SPECTRUM", SPECTRUM_BANDS[bandIdx].name);
+    char title[20];
+    snprintf(title, sizeof(title), "SPEC %s", SPECTRUM_BANDS[bandIdx].name);
+    ui_draw_header(title, "SCAN");
 
     display.drawFastHLine(0, 52, SCREEN_WIDTH, SSD1306_WHITE);
     display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
@@ -848,12 +850,11 @@ void ui_update_spectrum(int bandIdx) {
         }
     }
 
-    display.fillRect(68, 0, 60, 10, SSD1306_WHITE);
-    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
+    char title[20];
+    snprintf(title, sizeof(title), "SPEC %s", band.name);
     char peakBuf[16];
     snprintf(peakBuf, sizeof(peakBuf), "%ddBm", maxRssi);
-    display.setCursor(76, 1);
-    display.print(peakBuf);
+    ui_draw_header(title, peakBuf);
 
     display.display();
 }

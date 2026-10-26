@@ -135,14 +135,28 @@ bool radio_check_rx(uint32_t &code, uint8_t &bitLen, uint16_t &pulseLen, uint8_t
 }
 
 int radio_scan_rssi(float freq) {
-    ELECHOUSE_cc1101.setMHZ(freq);
-    ELECHOUSE_cc1101.SetRx();
-    delayMicroseconds(250);
+    ELECHOUSE_cc1101.SetRx(freq);
+    uint32_t start = micros();
+    while (micros() - start < 1000) {
+        if (ELECHOUSE_cc1101.SpiReadStatus(CC1101_PKTSTATUS) & 0x01) {
+            break;
+        }
+        delayMicroseconds(25);
+    }
     return ELECHOUSE_cc1101.getRssi();
 }
 
 int radio_get_rssi() {
     return ELECHOUSE_cc1101.getRssi();
+}
+
+void radio_debug_cc1101(float f, int &marc, int &pkt, int &rawRssi, int &dbm) {
+    ELECHOUSE_cc1101.SetRx(f);
+    delay(5);
+    marc = (int)ELECHOUSE_cc1101.SpiReadStatus(CC1101_MARCSTATE);
+    pkt = (int)ELECHOUSE_cc1101.SpiReadStatus(CC1101_PKTSTATUS);
+    rawRssi = (int)ELECHOUSE_cc1101.SpiReadStatus(CC1101_RSSI);
+    dbm = ELECHOUSE_cc1101.getRssi();
 }
 
 float radio_scan_fast_peak(int &outRssi) {

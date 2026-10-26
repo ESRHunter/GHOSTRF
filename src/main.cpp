@@ -240,8 +240,9 @@ void loop() {
         if (currentState == MODE_RAW_SNIFFER) {
             radio_stop_raw_sniffer();
         }
-        if (currentState == MODE_FREQ_ANALYZER) {
+        if (currentState == MODE_FREQ_ANALYZER || currentState == MODE_SPECTRUM) {
             radio_set_idle();
+            radio_apply_config(FREQ_PRESETS[currentFreqIdx], PA_LEVELS[currentPaIdx]);
         }
 
         currentState = MODE_MAIN_MENU;
@@ -279,6 +280,7 @@ void loop() {
                     analyzerLocked = false;
                     ui_draw_freq_analyzer_screen();
                 } else if (menuIndex == 4) {
+                    radio_set_idle();
                     currentState = MODE_SPECTRUM;
                     ui_reset_spectrum_peaks();
                     ui_draw_spectrum_screen(currentSpectrumBandIdx);

@@ -481,6 +481,32 @@ void proto_process_line(char* line, SavedSignal* sigList, int &sigCount, int &fr
                      battery_is_charging() ? "true" : "false",
                      battery_is_overvoltage() ? "true" : "false");
     }
+    else if (strncmp(line, "GET_SPECTRUM", 12) == 0) {
+        int band = 0;
+        sscanf(line + 12, "%d", &band);
+        if (band < 0 || band >= NUM_SPECTRUM_BANDS) band = 0;
+        const SpectrumBand &b = SPECTRUM_BANDS[band];
+        proto_printf("{\"cmd\":\"SPECTRUM_BEGIN\",\"band\":%d,\"name\":\"%s\"}", band, b.name);
+        Serial.print("{\"cmd\":\"SPECTRUM_DATA\",\"band\":");
+        Serial.print(band);
+        Serial.print(",\"rssi\":[");
+        for (int ch = 0; ch < SPECTRUM_CHANNELS; ch++) {
+            if (ch > 0) Serial.print(",");
+            float f = b.startFreq + (ch * b.stepFreq);
+            int r = radio_scan_rssi(f);
+            Serial.print(r);
+        }
+        Serial.println("]}");
+        radio_set_idle();
+    }
+    else if (strncmp(line, "TEST_CC1101", 11) == 0) {
+        float f = 433.92;
+        sscanf(line + 11, "%f", &f);
+        int marc = 0, pkt = 0, rawRssi = 0, dbm = 0;
+        radio_debug_cc1101(f, marc, pkt, rawRssi, dbm);
+        proto_printf("{\"cmd\":\"TEST_CC1101\",\"freq\":%.2f,\"marc\":%d,\"pkt\":%d,\"raw_rssi\":%d,\"dbm\":%d}",
+                     f, marc, pkt, rawRssi, dbm);
+    }
     else if (strncmp(line, "REBOOT", 6) == 0) {
         proto_println("{\"cmd\":\"REBOOTING\"}");
         delay(100);

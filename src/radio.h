@@ -14,6 +14,7 @@ void radio_update_carrier_loop(CarrierType mode);
 bool radio_check_rx(uint32_t &code, uint8_t &bitLen, uint16_t &pulseLen, uint8_t &proto);
 int  radio_scan_rssi(float freq);
 int  radio_get_rssi();
+void radio_debug_cc1101(float f, int &marc, int &pkt, int &rawRssi, int &dbm);
 
 // Автодетектор / Частотомер
 float radio_scan_fast_peak(int &outRssi);
