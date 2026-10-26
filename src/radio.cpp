@@ -27,6 +27,8 @@ bool radio_is_connected() {
     return ELECHOUSE_cc1101.getCC1101();
 }
 
+static bool rcSwitchEnabled = false;
+
 void radio_apply_config(float freq, int paLevel) {
     ELECHOUSE_cc1101.setMHZ(freq);
     ELECHOUSE_cc1101.setPA(paLevel);
@@ -37,17 +39,26 @@ void radio_apply_config(float freq, int paLevel) {
 void radio_set_rx(float freq, int paLevel) {
     radio_apply_config(freq, paLevel);
     ELECHOUSE_cc1101.SetRx();
-    mySwitch.enableReceive(CC_GDO0);
+    if (!rcSwitchEnabled) {
+        mySwitch.enableReceive(CC_GDO0);
+        rcSwitchEnabled = true;
+    }
 }
 
 void radio_set_tx(float freq, int paLevel) {
-    mySwitch.disableReceive();
+    if (rcSwitchEnabled) {
+        mySwitch.disableReceive();
+        rcSwitchEnabled = false;
+    }
     radio_apply_config(freq, paLevel);
     ELECHOUSE_cc1101.SetTx();
 }
 
 void radio_set_idle() {
-    mySwitch.disableReceive();
+    if (rcSwitchEnabled) {
+        mySwitch.disableReceive();
+        rcSwitchEnabled = false;
+    }
     ELECHOUSE_cc1101.setSidle();
 }
 
@@ -127,7 +138,10 @@ bool radio_check_rx(uint32_t &code, uint8_t &bitLen, uint16_t &pulseLen, uint8_t
         mySwitch.resetAvailable();
 
         if (code != 0) {
-            mySwitch.disableReceive();
+            if (rcSwitchEnabled) {
+                mySwitch.disableReceive();
+                rcSwitchEnabled = false;
+            }
             return true;
         }
     }
@@ -137,12 +151,15 @@ bool radio_check_rx(uint32_t &code, uint8_t &bitLen, uint16_t &pulseLen, uint8_t
 int radio_scan_rssi(float freq) {
     ELECHOUSE_cc1101.SetRx(freq);
     uint32_t start = micros();
-    while (micros() - start < 1000) {
-        if (ELECHOUSE_cc1101.SpiReadStatus(CC1101_PKTSTATUS) & 0x01) {
+    // Wait for CC1101 state machine to calibrate and enter RX (MARCSTATE 0x0D = 13)
+    while (micros() - start < 1500) {
+        if ((ELECHOUSE_cc1101.SpiReadStatus(CC1101_MARCSTATE) & 0x1F) == 0x0D) {
             break;
         }
         delayMicroseconds(25);
     }
+    // Allow RSSI filter to settle on incoming RF power (4 / RxBW ~ 5us, wait 50us)
+    delayMicroseconds(60);
     return ELECHOUSE_cc1101.getRssi();
 }
 
