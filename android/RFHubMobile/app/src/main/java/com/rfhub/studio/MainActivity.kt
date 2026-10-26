@@ -896,7 +896,9 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
             binding.btnConnect.text = "[ СМЕНИТЬ ]"
             binding.tvConnStep2.text = "[ ✔ ] 2. Подключение GATT успешно"
             binding.tvConnStep2.setTextColor(Color.parseColor("#00FF66"))
+            bleManager.requestBattery()
         } else {
+            binding.tvBattery.text = "[ 🔋 --% ]"
             binding.tvStatus.text = "[ BLE: ОТКЛЮЧЕНО ]"
             binding.tvStatus.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
             binding.tvTelemetry.text = "[ УСТРОЙСТВО НЕ НАЙДЕНО ]"
@@ -946,10 +948,13 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
 
     override fun onPong(
         device: String, ver: String, chip: String, cc1101: Boolean,
-        heap: Long, sigCount: Int, maxSig: Int, freq: Double, pa: Int, squelch: Int
+        heap: Long, sigCount: Int, maxSig: Int, freq: Double, pa: Int, squelch: Int,
+        batPct: Int, batMv: Int, charging: Boolean
     ) {
-        val tele = String.format(Locale.US, "%s | %s v%s | CC1101: %s | Сигналов: %d/%d | %.3f МГц | Heap: %d",
-            device, chip, ver, if (cc1101) "OK" else "ERR", sigCount, maxSig, freq, heap)
+        val batStr = if (charging) "[ ⚡ USB ]" else if (batPct >= 0) String.format(Locale.US, "[ 🔋 %d%% %.2fV ]", batPct, batMv / 1000.0) else "[ 🔋 --% ]"
+        binding.tvBattery.text = batStr
+        val tele = String.format(Locale.US, "%s | %s v%s | CC1101: %s | Сигналов: %d/%d | %.3f МГц | %s",
+            device, chip, ver, if (cc1101) "OK" else "ERR", sigCount, maxSig, freq, batStr)
         binding.tvTelemetry.text = tele
         binding.tvConnStep3.text = "[ ✔ ] 3. Синхронизация завершена! Память: $sigCount/$maxSig"
         binding.tvConnStep3.setTextColor(Color.parseColor("#00FF66"))
@@ -958,6 +963,12 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
                 showMainStudio()
             }, 350)
         }
+    }
+
+    override fun onBattery(rawAdc: Int, mv: Int, pct: Int, charging: Boolean, overvolt: Boolean) {
+        val batStr = if (charging) "[ ⚡ USB ]" else if (pct >= 0) String.format(Locale.US, "[ 🔋 %d%% %.2fV ]", pct, mv / 1000.0) else "[ 🔋 --% ]"
+        binding.tvBattery.text = batStr
+        appendConsole("[BATTERY] $batStr (ADC: $rawAdc, $mv mV)")
     }
 
     override fun onSignalsBegin(count: Int) {
