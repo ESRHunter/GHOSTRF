@@ -142,17 +142,6 @@
 
 ---
 
-## 🛠 Печатная плата (All-in-One PCB)
-
-Вся документация, перечень компонентов (BOM с артикулами LCSC), принципиальная схема и руководство по сборке/заказу в EasyEDA и JLCPCB находятся в директории [`pcb/`](file:///home/esrhunter/Документы/cc1101/pcb/README.md):
-
-* [pcb/README.md](file:///home/esrhunter/Документы/cc1101/pcb/README.md) — Обзор архитектуры и габариты платы.
-* [pcb/BOM.md](file:///home/esrhunter/Документы/cc1101/pcb/BOM.md) / [pcb/BOM.csv](file:///home/esrhunter/Документы/cc1101/pcb/BOM.csv) — Полная спецификация компонентов с кодами LCSC для автоматической сборки (PCBA).
-* [pcb/SCHEMATIC.md](file:///home/esrhunter/Документы/cc1101/pcb/SCHEMATIC.md) — Полная принципиальная электрическая схема всех узлов.
-* [pcb/LAYOUT_GUIDELINES.md](file:///home/esrhunter/Документы/cc1101/pcb/LAYOUT_GUIDELINES.md) — Расчет 50-Омной ВЧ-линии, экранирование и трассировка.
-* [pcb/easyeda_guide.md](file:///home/esrhunter/Документы/cc1101/pcb/easyeda_guide.md) — Пошаговое руководство по созданию проекта в EasyEDA и заказу на JLCPCB.
-
----
 
 ## 🖥 Кроссплатформенное приложение GHOSTRF Studio (`gui/`)
 
