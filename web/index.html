@@ -312,9 +312,9 @@
         <!-- CARD 2: QT6 DESKTOP STUDIO -->
         <div class="app-box-square">
           <div class="app-box-top">
-            <div class="app-badge-mono">[ LINUX x86_64 PORTABLE ]</div>
+            <div class="app-badge-mono">[ WINDOWS 10/11 x64 • LINUX x64 PORTABLE ]</div>
             <h3 class="app-h3">GHOSTRF Studio Desktop (Qt 6 / C++)</h3>
-            <div class="app-tech-line">C++17 • Qt 6 • USB-Serial • Полный автономный бандл с библиотеками</div>
+            <div class="app-tech-line">C++17 • Qt 6 • USB-Serial • Полные автономные бандлы со всеми DLL и библиотеками</div>
 
             <ul class="app-features-ul">
               <li>
@@ -337,22 +337,31 @@
           </div>
 
           <div>
-            <a href="GHOSTRF-Studio-Desktop-Linux-x64.tar.gz" download class="btn-square btn-square-primary" style="width:100%; margin-bottom:8px;">
-              [ DOWNLOAD: GHOSTRF-STUDIO-DESKTOP (LINUX x64, 38 МБ) ]
-            </a>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;">
+              <a href="GHOSTRF-Studio-Desktop-Windows-x64.zip" download class="btn-square btn-square-primary" style="width:100%; text-align:center;">
+                [ DOWNLOAD: WINDOWS 10 / 11 x64 (.ZIP, 35 МБ) ]
+              </a>
+              <a href="GHOSTRF-Studio-Desktop-Linux-x64.tar.gz" download class="btn-square" style="width:100%; text-align:center;">
+                [ DOWNLOAD: LINUX x86_64 (.TAR.GZ, 38 МБ) ]
+              </a>
+            </div>
 
             <!-- Step by Step Instructions for downloading and running -->
             <div class="code-box-square" style="margin-top:6px; font-size:10.5px; line-height:1.6;">
-              <div style="color:var(--c-accent); font-weight:bold; margin-bottom:4px;">[ ИНСТРУКЦИЯ ПО ЗАПУСКУ НА ЛЮБОМ LINUX ]:</div>
-              <div style="color:#fff;">1. <strong>Распаковать скачанный архив:</strong></div>
-              <code style="display:block; background:#111; padding:3px 6px; margin:2px 0 6px 0; border:1px solid #333;">tar -xvf GHOSTRF-Studio-Desktop-Linux-x64.tar.gz</code>
-              <div style="color:#fff;">2. <strong>Запустить приложение:</strong></div>
-              <code style="display:block; background:#111; padding:3px 6px; margin:2px 0 6px 0; border:1px solid #333;">cd GHOSTRF-Studio-Desktop-Linux-x64 &amp;&amp; ./run.sh</code>
-              <div style="color:#aaa; font-size:9.5px; margin-top:4px;">
-                * Все библиотеки Qt 6 и платформа XCB уже встроены — сборка запускается на любом дистрибутиве Linux x86_64 без установки сторонних пакетов.
+              <div style="color:var(--c-accent); font-weight:bold; margin-bottom:4px;">[ 🪟 ИНСТРУКЦИЯ ДЛЯ WINDOWS ]:</div>
+              <div style="color:#fff;">1. Скачайте и распакуйте <code>.zip</code> в любую папку.</div>
+              <div style="color:#fff;">2. Запустите <code>GHOSTRF-Studio.exe</code> (все DLL и плагины Qt 6 внутри).</div>
+              <div style="color:#aaa; font-size:9.5px; margin-bottom:6px;">
+                * При первом подключении ESP32-C3 по USB-C виртуальный COM-порт определится автоматически в Диспетчере устройств.
               </div>
+
+              <div style="color:var(--c-accent); font-weight:bold; margin-top:6px; margin-bottom:4px;">[ 🐧 ИНСТРУКЦИЯ ДЛЯ LINUX ]:</div>
+              <div style="color:#fff;">1. <strong>Распаковать архив:</strong></div>
+              <code style="display:block; background:#111; padding:3px 6px; margin:2px 0; border:1px solid #333;">tar -xvf GHOSTRF-Studio-Desktop-Linux-x64.tar.gz</code>
+              <div style="color:#fff;">2. <strong>Запустить в 1 клик:</strong></div>
+              <code style="display:block; background:#111; padding:3px 6px; margin:2px 0; border:1px solid #333;">cd GHOSTRF-Studio-Desktop-Linux-x64 &amp;&amp; ./run.sh</code>
               <div style="color:#888; font-size:9.5px; margin-top:2px;">
-                * Для доступа к порту ESP32 без sudo выполните: <code>sudo usermod -a -G dialout $USER</code> (Debian/Ubuntu) или <code>sudo usermod -a -G uucp $USER</code> (Arch)
+                * Доступ к COM-порту без sudo: <code>sudo usermod -a -G dialout $USER</code>
               </div>
             </div>
 
@@ -616,7 +625,8 @@
       </div>
 
       <div class="footer-links-side">
-        <a href="GHOSTRF-Studio-Desktop-Linux-x64.tar.gz" download class="footer-link-item">[ СКАЧАТЬ DESKTOP LINUX (38 МБ) ]</a>
+        <a href="GHOSTRF-Studio-Desktop-Windows-x64.zip" download class="footer-link-item">[ СКАЧАТЬ WINDOWS (.ZIP, 35 МБ) ]</a>
+        <a href="GHOSTRF-Studio-Desktop-Linux-x64.tar.gz" download class="footer-link-item">[ СКАЧАТЬ LINUX (.TAR.GZ, 38 МБ) ]</a>
         <a href="GHOSTRF-Studio.apk" download class="footer-link-item">[ СКАЧАТЬ ANDROID APK (5.9 МБ) ]</a>
         <a href="firmware_merged.bin" download class="footer-link-item">[ ПРОШИВКА .BIN (1.54 МБ) ]</a>
         <a href="logo.svg" download class="footer-link-item">[ ЛОГОТИП (SVG) ]</a>
