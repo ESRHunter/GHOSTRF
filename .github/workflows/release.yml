@@ -1,0 +1,62 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "GHOSTRF ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+          files: |
+            web/firmware_merged.bin
+            web/firmware.bin
+            web/GHOSTRF-Studio.apk
+            web/GHOSTRF-Studio-Desktop-Linux-x64.tar.gz
+            web/GHOSTRF-Studio-Desktop-Windows-x64.zip
+          body: |
+            ## 🚀 GHOSTRF v1.0.0 — Sub-GHz & 2.4GHz RF Multi-Tool
+
+            Портативный RF-Мультитул на базе **ESP32-C3 RISC-V + CC1101 + OLED SSD1306 (128x64 I2C)**.
+
+            ### 📦 Прикрепленные файлы релиза:
+            * **`GHOSTRF-Studio.apk`** — Мобильное приложение Android (Bluetooth LE 5.0) для удаленного управления устройством, отображения OLED-экрана, осциллографа и сниффера.
+            * **`firmware_merged.bin`** — Полный готовый образ прошивки ESP32-C3 (смещение `0x0`). Прошивается в 1 клик через [Веб-прошивальщик](https://esrhunter.github.io/GHOSTRF/) или через `esptool.py`.
+            * **`firmware.bin`** — Бинарник прошивки для PlatformIO / OTA (смещение `0x10000`).
+            * **`GHOSTRF-Studio-Desktop-Linux-x64.tar.gz`** — Кроссплатформенная десктоп-студия на Qt 6 для Linux (x86_64).
+            * **`GHOSTRF-Studio-Desktop-Windows-x64.zip`** — Десктоп-студия на Qt 6 для Windows (x86_64).
+
+            ---
+
+            ### ⚡ Возможности прошивки:
+            * **Sub-GHz (CC1101 300–928 МГц):**
+              * **Remote TX:** отправка сохраненных fixed-кодов (EV1527, PT2262, Came 12/24, Nice 12, DoorHan, Linear 10).
+              * **Sniffer RX:** быстрый перехват фиксированных кодов с сохранением в NVS и быстрым повтором (Replay).
+              * **RAW Sniffer:** аппаратный захват таймингов импульсов с адаптивным порогом Squelch.
+              * **Декодер KeeLoq:** автоматическое распознавание брелоков HCS200 / HCS300 / HCS301 (серийный номер, кнопка, счетчик).
+              * **Встроенный осциллограф:** графическое отображение формы сигнала прямо на экране 128x64.
+              * **RSSI Spectrum:** 32-канальный спектроанализатор с Peak Hold для диапазонов 433, 315 и 868 МГц.
+              * **Freq Analyzer:** частотомер с авто-поиском несущей и замером пикового RSSI.
+              * **Carrier / Jam:** генератор тестовой несущей и аудиотона.
+            * **2.4 GHz (ESP32-C3):**
+              * Wi-Fi сканер эфира и 13-канальная гистограмма занятости частот.
+              * Wi-Fi Deauth Sniffer (детектор глушилок и пакетов деаутентификации).
+              * BLE Radar и Wi-Fi Beacon Spam.
+            * **Аппаратные фичи:**
+              * Мониторинг аккумулятора Li-Po через АЦП (GPIO 2) со сглаживанием и динамическим баром заряда.
+              * 3-кнопочное неблокирующее управление с длинными нажатиями.
+              * Веб-прошивальщик WebSerial и BLE PWA интерфейс.
