@@ -9,8 +9,7 @@
 Переход на OLED 0.96" по шине I2C освободил пины и уменьшил габариты устройства до размера спичечного коробка!
 
 <p align="center">
-  <img src="web/ghostrf_photo_assembled.jpg" alt="GHOSTRF в сборе" width="48%">
-  <img src="web/ghostrf_user_parts_annotated.jpg" alt="Компоненты устройства" width="48%">
+  <img src="web/ghostrf_user_parts_annotated.jpg" alt="Компоненты устройства GHOSTRF" width="85%">
 </p>
 
 ![Принципиальная и монтажная схема GHOSTRF](web/ghostrf_wiring_diagram.png)
