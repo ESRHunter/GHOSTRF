@@ -670,7 +670,9 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
             card.tvPacketProto.text = entry.item.typeName()
             card.tvPacketRssi.text = "${entry.rssi} dBm"
             card.tvPacketFreq.text = String.format(Locale.US, "%.3f МГц", entry.item.freq)
-            card.tvPacketCode.text = if (entry.item.type == SignalItem.SIG_KIND_RAW) {
+            card.tvPacketCode.text = if (entry.item.isKeeloq) {
+                "KeeLoq SN:${entry.item.keeloqSerialHex()} Btn:${entry.item.keeloqBtn}"
+            } else if (entry.item.type == SignalItem.SIG_KIND_RAW) {
                 "${entry.item.pulses.size} имп."
             } else {
                 "${entry.item.codeHex()} (${entry.item.bitLen}b, TE=${entry.item.pulseLen}µs)"
@@ -698,7 +700,12 @@ class MainActivity : AppCompatActivity(), BleManager.Listener {
     private fun showSelectedSnifferDetails(entry: SnifferEntry) {
         binding.cardSnifferDetails.visibility = View.VISIBLE
         val item = entry.item
-        binding.tvSniffPacketTitle.text = "[${entry.timeStr}] ${item.typeName()} | ${item.codeHex()} | RSSI: ${entry.rssi} dBm"
+        val infoStr = if (item.isKeeloq) {
+            "[${entry.timeStr}] KeeLoq | SN: ${item.keeloqSerialHex()} | Кнопка: ${item.keeloqBtn} | Enc: ${item.keeloqEncHex()} | RSSI: ${entry.rssi} dBm"
+        } else {
+            "[${entry.timeStr}] ${item.typeName()} | ${item.codeHex()} | RSSI: ${entry.rssi} dBm"
+        }
+        binding.tvSniffPacketTitle.text = infoStr
         binding.waveformSniffer.setPulses(item.toWaveformPulses())
     }
 
