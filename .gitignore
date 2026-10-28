@@ -41,3 +41,15 @@ compile_commands.json
 .DS_Store
 *.tmp
 *.log
+
+# Agent workspaces and scratch logs
+.agents/
+motion_render/
+
+# Host test runner binaries
+run_tests
+run_tests_san
+run_adversarial_tests
+run_challenger_tests
+run_stress_tests
+run_r2_stress

@@ -1,6 +1,8 @@
 #pragma once
 #include <Arduino.h>
 #include "types.h"
+#include "radio_modes.h"
+#include "sensor_telemetry.h"
 
 void radio_init();
 bool radio_is_connected();
@@ -24,6 +26,10 @@ void radio_start_raw_sniffer(float freq, int paLevel, int squelchDbm);
 void radio_stop_raw_sniffer();
 bool radio_check_raw(RawPacket &outPacket, int squelchDbm);
 void radio_transmit_raw_pulses(const uint16_t* pulses, uint16_t count, float freq, int paLevel, uint8_t repeats = 4);
+
+// Telemetry Sniffer & Decoding API
+bool radio_check_telemetry(SensorTelemetryData &outData);
+void radio_start_telemetry_sniffer(RfModulation mod, float freqMhz, int paLevel);
 
 // Smart Home & Open Protocols (EV1527, PT2262, Came, Nice)
 bool radio_decode_pt2262_tristate(uint32_t code, uint8_t bitLen, char* outTriStr);

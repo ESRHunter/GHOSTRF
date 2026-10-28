@@ -1,0 +1,62 @@
+name: CI & Integrity Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify Documentation & Web Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Documentation & Web Integrity Suite (55/55 Checks)
+        run: |
+          python3 test/verify_docs_and_web.py
+
+  host-tests:
+    name: Host C++ Non-Hardware Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Compile & Run C++17 Host Unit Tests
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Itest -Isrc \
+            test/test_main.cpp test/test_sub_format.cpp test/test_keeloq.cpp test/test_telemetry.cpp \
+            src/sub_format.cpp src/keeloq.cpp src/keeloq_analyzer.cpp src/sensor_telemetry.cpp \
+            -o run_tests
+          ./run_tests
+
+  embedded-build:
+    name: PlatformIO ESP32-C3 Firmware Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: |
+          pip install --upgrade platformio
+
+      - name: Compile ESP32-C3 SuperMini Firmware
+        run: |
+          pio run -e esp32-c3-supermini

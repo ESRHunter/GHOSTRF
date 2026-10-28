@@ -77,6 +77,12 @@ uint8_t PA_TABLE_433[8] {0x12,0x0E,0x1D,0x34,0x60,0x84,0xC8,0xC0,};             
 uint8_t PA_TABLE_868[10] {0x03,0x17,0x1D,0x26,0x37,0x50,0x86,0xCD,0xC5,0xC0,};  //779 - 899.99
 //                        -30  -20  -15  -10  -6    0    5    7    10   11
 uint8_t PA_TABLE_915[10] {0x03,0x0E,0x1E,0x27,0x38,0x8E,0x84,0xCC,0xC3,0xC0,};  //900 - 928
+
+#define WAIT_MISO_LOW() do { \
+  uint32_t _wStart = micros(); \
+  while (digitalRead(MISO_PIN) && (micros() - _wStart < 2500)) {} \
+} while(0)
+
 /****************************************************************
 *FUNCTION NAME:SpiStart
 *FUNCTION     :spi communication start
@@ -144,9 +150,9 @@ void ELECHOUSE_CC1101::Reset (void)
 	digitalWrite(SS_PIN, HIGH);
 	delay(1);
 	digitalWrite(SS_PIN, LOW);
-	while(digitalRead(MISO_PIN));
+	WAIT_MISO_LOW();
   SPI.transfer(CC1101_SRES);
-  while(digitalRead(MISO_PIN));
+  WAIT_MISO_LOW();
 	digitalWrite(SS_PIN, HIGH);
 }
 /****************************************************************
@@ -176,7 +182,7 @@ void ELECHOUSE_CC1101::SpiWriteReg(byte addr, byte value)
 {
   SpiStart();
   digitalWrite(SS_PIN, LOW);
-  while(digitalRead(MISO_PIN));
+  WAIT_MISO_LOW();
   SPI.transfer(addr);
   SPI.transfer(value); 
   digitalWrite(SS_PIN, HIGH);
@@ -194,7 +200,7 @@ void ELECHOUSE_CC1101::SpiWriteBurstReg(byte addr, byte *buffer, byte num)
   SpiStart();
   temp = addr | WRITE_BURST;
   digitalWrite(SS_PIN, LOW);
-  while(digitalRead(MISO_PIN));
+  WAIT_MISO_LOW();
   SPI.transfer(temp);
   for (i = 0; i < num; i++)
   {
@@ -213,7 +219,7 @@ void ELECHOUSE_CC1101::SpiStrobe(byte strobe)
 {
   SpiStart();
   digitalWrite(SS_PIN, LOW);
-  while(digitalRead(MISO_PIN));
+  WAIT_MISO_LOW();
   SPI.transfer(strobe);
   digitalWrite(SS_PIN, HIGH);
   SpiEnd();
@@ -230,7 +236,7 @@ byte ELECHOUSE_CC1101::SpiReadReg(byte addr)
   SpiStart();
   temp = addr| READ_SINGLE;
   digitalWrite(SS_PIN, LOW);
-  while(digitalRead(MISO_PIN));
+  WAIT_MISO_LOW();
   SPI.transfer(temp);
   value=SPI.transfer(0);
   digitalWrite(SS_PIN, HIGH);
@@ -250,7 +256,7 @@ void ELECHOUSE_CC1101::SpiReadBurstReg(byte addr, byte *buffer, byte num)
   SpiStart();
   temp = addr | READ_BURST;
   digitalWrite(SS_PIN, LOW);
-  while(digitalRead(MISO_PIN));
+  WAIT_MISO_LOW();
   SPI.transfer(temp);
   for(i=0;i<num;i++)
   {
@@ -272,7 +278,7 @@ byte ELECHOUSE_CC1101::SpiReadStatus(byte addr)
   SpiStart();
   temp = addr | READ_BURST;
   digitalWrite(SS_PIN, LOW);
-  while(digitalRead(MISO_PIN));
+  WAIT_MISO_LOW();
   SPI.transfer(temp);
   value=SPI.transfer(0);
   digitalWrite(SS_PIN, HIGH);

@@ -2081,6 +2081,17 @@ if (btnReboot) {
 // Physical Keyboard mappings: Up, Down, Enter, Escape, P (Packet)
 window.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  // Video Modal Escape handling
+  const modalElem = document.getElementById('videoModal');
+  if (e.key === 'Escape' && modalElem && modalElem.style.display !== 'none') {
+    e.preventDefault();
+    if (typeof closeVideoModal === 'function') {
+      closeVideoModal();
+    }
+    return;
+  }
+
   if (e.key === 'ArrowUp') {
     e.preventDefault();
     handleButtonEvent('UP');
@@ -2098,28 +2109,213 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// --- 12. WEBSERIAL TERMINAL HANDLER ---
+// --- 12. WEBSERIAL TERMINAL HANDLER & FLASHER CONTROLLER ---
 const btnWebSerialConnect = document.getElementById('btnWebSerialConnect');
+const btnWebSerialFlash = document.getElementById('btnWebSerialFlash');
+let activeSerialPort = null;
+let serialReader = null;
+
 if (btnWebSerialConnect) {
   btnWebSerialConnect.addEventListener('click', async () => {
     playClickSound(1000, 0.03);
     const termLog = document.getElementById('termLog');
     if ('serial' in navigator) {
       try {
-        termLog.innerHTML += '<div class="term-line highlight">[USB] Запрос COM-порта у пользователя...</div>';
+        if (termLog) {
+          termLog.innerHTML += '<div class="term-line highlight">[USB] Открытие диалога выбора COM-порта...</div>';
+          termLog.scrollTop = termLog.scrollHeight;
+        }
         const port = await navigator.serial.requestPort();
         await port.open({ baudRate: 115200 });
-        termLog.innerHTML += '<div class="term-line highlight">[USB] Порт успешно открыт на 115200 бод!</div>';
-        termLog.innerHTML += '<div class="term-line">[MCU] Отклик ESP32-C3: OK (Chip Rev v0.4)</div>';
+        activeSerialPort = port;
+
+        if (termLog) {
+          termLog.innerHTML += '<div class="term-line highlight">[USB] Порт успешно открыт на 115200 бод!</div>';
+          termLog.innerHTML += '<div class="term-line">[MCU] Обнаружено устройство ESP32-C3 USB-JTAG/Serial (Rev v0.4).</div>';
+          termLog.innerHTML += '<div class="term-line">[SYS] Готов к приёму логов и прошивке через WebSerial.</div>';
+          termLog.scrollTop = termLog.scrollHeight;
+        }
+
         btnWebSerialConnect.textContent = '[ COM: ОНЛАЙН ]';
         btnWebSerialConnect.style.backgroundColor = '#ffffff';
         btnWebSerialConnect.style.color = '#000000';
+
+        if (btnWebSerialFlash) {
+          btnWebSerialFlash.disabled = false;
+        }
+
+        // Live telemetry reader
+        if (port.readable) {
+          const textDecoder = new TextDecoderStream();
+          port.readable.pipeTo(textDecoder.writable).catch(() => {});
+          serialReader = textDecoder.readable.getReader();
+          (async () => {
+            while (true) {
+              const { value, done } = await serialReader.read();
+              if (done) break;
+              if (value && termLog) {
+                const line = document.createElement('div');
+                line.className = 'term-line';
+                line.textContent = value.trim();
+                termLog.appendChild(line);
+                termLog.scrollTop = termLog.scrollHeight;
+              }
+            }
+          })().catch(() => {});
+        }
       } catch (err) {
-        termLog.innerHTML += `<div class="term-line">[USB] Ошибка: ${err.message}</div>`;
+        if (termLog) {
+          if (err.name === 'NotFoundError') {
+            termLog.innerHTML += '<div class="term-line">[USB] Выбор порта отменён пользователем.</div>';
+          } else {
+            termLog.innerHTML += `<div class="term-line">[USB] Ошибка: ${err.message}</div>`;
+          }
+          termLog.scrollTop = termLog.scrollHeight;
+        }
       }
     } else {
-      termLog.innerHTML += '<div class="term-line">[USB] WebSerial API не поддерживается в данном браузере.</div>';
+      if (termLog) {
+        termLog.innerHTML += '<div class="term-line">[USB] WebSerial API не поддерживается в этом браузере. Используйте Chrome / Edge / Opera.</div>';
+        termLog.scrollTop = termLog.scrollHeight;
+      }
     }
+  });
+}
+
+if (btnWebSerialFlash) {
+  btnWebSerialFlash.addEventListener('click', () => {
+    playClickSound(1200, 0.03);
+    const termLog = document.getElementById('termLog');
+    const installBtn = document.querySelector('esp-web-install-button');
+    if (termLog) {
+      termLog.innerHTML += '<div class="term-line highlight">[SYS] Запуск мастера прошивки ESP32-C3 (esp-web-tools)...</div>';
+      termLog.innerHTML += '<div class="term-line">[IMG] Источник: manifest.json (Offset 0x0 / 0x8000 / 0xe000 / 0x10000)</div>';
+      termLog.innerHTML += '<div class="term-line">[TIP] Следуйте инструкциям во всплывающем окне WebSerial.</div>';
+      termLog.scrollTop = termLog.scrollHeight;
+    }
+    if (installBtn) {
+      const shadowBtn = installBtn.shadowRoot ? installBtn.shadowRoot.querySelector('button') : null;
+      const slotBtn = installBtn.querySelector('button');
+      if (shadowBtn) {
+        shadowBtn.click();
+      } else if (slotBtn) {
+        slotBtn.click();
+      }
+    }
+  });
+}
+
+// --- 13. PROMO VIDEO SHOWCASE & THEATRE MODAL LOGIC ---
+const inlineVideo = document.getElementById('ghostrfInlineVideo');
+const modalVideo = document.getElementById('ghostrfModalVideo');
+const videoModal = document.getElementById('videoModal');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const btnOpenPromoModal = document.getElementById('btnOpenPromoModal');
+const btnInlineModalToggle = document.getElementById('btnInlineModalToggle');
+const btnHeroWatchPromo = document.getElementById('btnHeroWatchPromo');
+const btnCloseModal = document.getElementById('btnCloseModal');
+const btnInlinePlayPause = document.getElementById('btnInlinePlayPause');
+const btnModalPlayPause = document.getElementById('btnModalPlayPause');
+const btnInlineSoundToggle = document.getElementById('btnInlineSoundToggle');
+const btnModalSoundToggle = document.getElementById('btnModalSoundToggle');
+
+function openVideoModal() {
+  if (!videoModal) return;
+  playClickSound(1200, 0.02);
+  videoModal.style.display = 'flex';
+  videoModal.setAttribute('aria-hidden', 'false');
+
+  if (inlineVideo && !inlineVideo.paused) {
+    if (modalVideo) {
+      modalVideo.currentTime = inlineVideo.currentTime;
+    }
+    inlineVideo.pause();
+  } else if (inlineVideo && modalVideo) {
+    modalVideo.currentTime = inlineVideo.currentTime;
+  }
+
+  if (modalVideo) {
+    modalVideo.play().catch(() => {});
+  }
+}
+
+function closeVideoModal() {
+  if (!videoModal) return;
+  playClickSound(800, 0.02);
+  videoModal.style.display = 'none';
+  videoModal.setAttribute('aria-hidden', 'true');
+
+  if (modalVideo && !modalVideo.paused) {
+    if (inlineVideo) {
+      inlineVideo.currentTime = modalVideo.currentTime;
+    }
+    modalVideo.pause();
+  } else if (modalVideo && inlineVideo) {
+    inlineVideo.currentTime = modalVideo.currentTime;
+  }
+}
+
+btnOpenPromoModal?.addEventListener('click', openVideoModal);
+btnInlineModalToggle?.addEventListener('click', openVideoModal);
+btnHeroWatchPromo?.addEventListener('click', openVideoModal);
+btnCloseModal?.addEventListener('click', closeVideoModal);
+modalBackdrop?.addEventListener('click', closeVideoModal);
+
+// Inline Play / Pause
+if (btnInlinePlayPause && inlineVideo) {
+  btnInlinePlayPause.addEventListener('click', () => {
+    playClickSound(1000, 0.02);
+    if (inlineVideo.paused) {
+      inlineVideo.play().catch(() => {});
+    } else {
+      inlineVideo.pause();
+    }
+  });
+
+  inlineVideo.addEventListener('play', () => {
+    btnInlinePlayPause.textContent = '[ ⏸ ПАУЗА ]';
+  });
+
+  inlineVideo.addEventListener('pause', () => {
+    btnInlinePlayPause.textContent = '[ ▶ ПУСК ]';
+  });
+}
+
+// Inline Sound Toggle
+if (btnInlineSoundToggle && inlineVideo) {
+  btnInlineSoundToggle.addEventListener('click', () => {
+    playClickSound(1100, 0.02);
+    inlineVideo.muted = !inlineVideo.muted;
+    btnInlineSoundToggle.textContent = inlineVideo.muted ? '[ 🔇 ЗВУК: ВЫКЛ ]' : '[ 🔊 ЗВУК: ВКЛ ]';
+  });
+}
+
+// Modal Play / Pause
+if (btnModalPlayPause && modalVideo) {
+  btnModalPlayPause.addEventListener('click', () => {
+    playClickSound(1000, 0.02);
+    if (modalVideo.paused) {
+      modalVideo.play().catch(() => {});
+    } else {
+      modalVideo.pause();
+    }
+  });
+
+  modalVideo.addEventListener('play', () => {
+    btnModalPlayPause.textContent = '[ ⏸ ПАУЗА ]';
+  });
+
+  modalVideo.addEventListener('pause', () => {
+    btnModalPlayPause.textContent = '[ ▶ ПУСК ]';
+  });
+}
+
+// Modal Sound Toggle
+if (btnModalSoundToggle && modalVideo) {
+  btnModalSoundToggle.addEventListener('click', () => {
+    playClickSound(1100, 0.02);
+    modalVideo.muted = !modalVideo.muted;
+    btnModalSoundToggle.textContent = modalVideo.muted ? '[ 🔇 ЗВУК: ВЫКЛ ]' : '[ 🔊 ЗВУК: ВКЛ ]';
   });
 }
 

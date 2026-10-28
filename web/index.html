@@ -38,6 +38,7 @@
 
       <!-- Navigation Links -->
       <nav class="nav-links-row">
+        <a href="#sec-promo" class="nav-btn">[ 00. ПРОМО ]</a>
         <a href="#sec-device" class="nav-btn">[ 01. ГАДЖЕТ ]</a>
         <a href="#sec-apps" class="nav-btn">[ 02. ПРИЛОЖЕНИЯ ]</a>
         <a href="#sec-firmware" class="nav-btn">[ 03. ПРОШИВКА ]</a>
@@ -68,14 +69,17 @@
       </p>
 
       <div class="hero-actions-row">
+        <button id="btnHeroWatchPromo" class="btn-square" style="cursor:pointer;">
+          [ ▶ СМОТРЕТЬ ПРОМО (1080P) ]
+        </button>
         <a href="#sec-firmware" class="btn-square btn-square-primary">
           [ INSTALL: ВЕБ-ПРОШИВКА (WEBSERIAL) ]
         </a>
         <a href="GHOSTRF-Studio.apk" download class="btn-square">
-          [ APK: ANDROID СТУДИЯ (6.6 МБ) ]
+          [ APK: ANDROID СТУДИЯ (6.0 МБ) ]
         </a>
         <a href="firmware_merged.bin" download class="btn-square">
-          [ FIRMWARE: ОБРАЗ .BIN (1.54 МБ) ]
+          [ FIRMWARE: ВСЁ-В-ОДНОМ (1.7 МБ) ]
         </a>
       </div>
 
@@ -98,6 +102,101 @@
         </div>
       </div>
     </section>
+
+    <!-- =========================================================================
+         SECTION 00: OFFICIAL PROMO VIDEO SHOWCASE (1080P B&W MOTION)
+         ========================================================================= -->
+    <section class="section-panel" id="sec-promo">
+      <div class="section-panel-header">
+        <div>
+          <h2 class="section-h2">[ 00. ОФИЦИАЛЬНЫЙ ПРОМО-РОЛИК GHOSTRF ]</h2>
+          <div class="section-subtext">Демонстрация возможностей: Sub-GHz, 2.4 ГГц, OLED симулятор, приложения и WebSerial</div>
+        </div>
+        <div class="status-indicator">
+          [ 1080P 30FPS • STEREO B&amp;W SOUNDTRACK <span class="pixel-cursor"></span> ]
+        </div>
+      </div>
+
+      <div class="promo-video-card">
+        <div class="video-window-bar">
+          <div class="video-window-title">[ GHOSTRF_Official_Promo.mp4 // 26.5s // FULL HD 1080P ]</div>
+          <div class="video-window-actions">
+            <button id="btnOpenPromoModal" class="btn-video-top" title="Открыть в модальном окне">[ 🗖 THEATRE MODE ]</button>
+          </div>
+        </div>
+
+        <div class="video-viewport-wrapper">
+          <video id="ghostrfInlineVideo" class="brutalist-video" poster="preview_v4_website.jpg" preload="metadata" playsinline controls>
+            <source src="GHOSTRF_Official_Promo.mp4" type="video/mp4">
+            [ Ваш браузер не поддерживает HTML5 видео. Скачайте файл по ссылке ниже. ]
+          </video>
+        </div>
+
+        <!-- Custom Brutalist Player Controls Bar -->
+        <div class="video-controls-bar">
+          <div class="video-ctrl-group">
+            <button id="btnInlinePlayPause" class="btn-square" style="font-size:11px; padding:6px 12px; cursor:pointer;">
+              [ ▶ ПУСК ]
+            </button>
+            <button id="btnInlineSoundToggle" class="btn-square" style="font-size:11px; padding:6px 12px; cursor:pointer;">
+              [ 🔊 ЗВУК: ВКЛ ]
+            </button>
+            <button id="btnInlineModalToggle" class="btn-square" style="font-size:11px; padding:6px 12px; cursor:pointer;">
+              [ 🗖 THEATRE OKHO ]
+            </button>
+          </div>
+          <div class="video-ctrl-group">
+            <a href="GHOSTRF_Official_Promo.mp4" download class="btn-square btn-square-primary" style="font-size:11px; padding:6px 12px;">
+              [ ⬇ СКАЧАТЬ MP4 (2.8 МБ) ]
+            </a>
+          </div>
+        </div>
+
+        <div class="video-meta-bar">
+          <div class="video-specs-text">
+            <span><strong>КОДЕК:</strong> H.264 / AAC STEREO</span>
+            <span><strong>ХРОНОМЕТРАЖ:</strong> 26.5 СЕК</span>
+            <span><strong>РАЗРЕШЕНИЕ:</strong> 1920x1080 (30 FPS)</span>
+            <span><strong>САУНДТРЕК:</strong> B&amp;W INDUSTRIAL SYNTH</span>
+            <span><strong>РАЗМЕР:</strong> 2.80 МБ</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         BRUTALIST THEATRE MODAL (FULL-PAGE OVERLAY)
+         ========================================================================= -->
+    <div id="videoModal" class="brutalist-modal" aria-hidden="true" style="display:none;">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-dialog-box" role="dialog" aria-modal="true" aria-label="GHOSTRF Promo Video">
+        <div class="modal-header-bar">
+          <div class="modal-title-text">[ GHOSTRF OFFICIAL PROMO // THEATRE MODE ]</div>
+          <button id="btnCloseModal" class="btn-modal-close" title="Закрыть модальное окно">[ ✕ ЗАКРЫТЬ (ESC) ]</button>
+        </div>
+        <div class="modal-body-video">
+          <video id="ghostrfModalVideo" class="brutalist-video" poster="preview_v4_website.jpg" playsinline controls>
+            <source src="GHOSTRF_Official_Promo.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="modal-footer-bar">
+          <div class="modal-specs-text">
+            [ ESP32-C3 RISC-V + CC1101 SUB-GHZ + 2.4GHZ + OLED 128x64 + QT6 + ANDROID ]
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="btnModalPlayPause" class="btn-square" style="font-size:10px; padding:4px 8px; cursor:pointer;">
+              [ ▶ ПУСК ]
+            </button>
+            <button id="btnModalSoundToggle" class="btn-square" style="font-size:10px; padding:4px 8px; cursor:pointer;">
+              [ 🔊 ЗВУК ]
+            </button>
+            <a href="GHOSTRF_Official_Promo.mp4" download class="btn-square" style="font-size:10px; padding:4px 8px;">
+              [ СКАЧАТЬ MP4 ]
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- =========================================================================
          SECTION 01: HARDWARE GADGET & OLED SIMULATOR (STRICT MONOCHROME)
@@ -376,6 +475,84 @@
         </div>
 
       </div>
+
+      <!-- RELEASE DOWNLOADS MATRIX TABLE (ALL 5 ARTIFACTS) -->
+      <div style="margin-top: 24px; border: 2px solid var(--c-white); background-color: var(--c-dark-1); padding: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--c-gray-border); padding-bottom:8px; flex-wrap:wrap; gap:8px;">
+          <div style="font-weight:800; font-size:12px;">[ МАТРИЦА ОФИЦИАЛЬНЫХ РЕЛИЗОВ И АРТЕФАКТОВ GHOSTRF v1.0.0 ]</div>
+          <div style="font-size:10px; color:var(--c-gray-muted);">[ 5 ГОТОВЫХ СБОРОК И ОБРАЗОВ ]</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="pinout-table-square" style="margin-top:0;">
+            <thead>
+              <tr>
+                <th>АРТЕФАКТ</th>
+                <th>ТИП / ПЛАТФОРМА</th>
+                <th>РАЗМЕР</th>
+                <th>НАЗНАЧЕНИЕ / СМЕЩЕНИЕ</th>
+                <th>ДЕЙСТВИЕ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>GHOSTRF-Studio.apk</strong></td>
+                <td>Android 7.0+ (Universal APK)</td>
+                <td>~6.0 МБ</td>
+                <td>Мобильное приложение с BLE 5.0 стримингом OLED и пультом ДУ</td>
+                <td>
+                  <a href="GHOSTRF-Studio.apk" download class="btn-square btn-square-primary" style="font-size:10px; padding:4px 8px; display:inline-block;">
+                    [ СКАЧАТЬ APK ]
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>GHOSTRF-Studio-Desktop-Linux-x64.tar.gz</strong></td>
+                <td>Linux x86_64 Portable</td>
+                <td>~38 МБ</td>
+                <td>Полная C++ Qt 6 студия со скриптом запуска <code>./run.sh</code></td>
+                <td>
+                  <a href="GHOSTRF-Studio-Desktop-Linux-x64.tar.gz" download class="btn-square" style="font-size:10px; padding:4px 8px; display:inline-block;">
+                    [ СКАЧАТЬ TAR.GZ ]
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>GHOSTRF-Studio-Desktop-Windows-x64.zip</strong></td>
+                <td>Windows 10 / 11 x64</td>
+                <td>~35 МБ</td>
+                <td>Автономный архив с <code>GHOSTRF-Studio.exe</code> и всеми DLL</td>
+                <td>
+                  <a href="GHOSTRF-Studio-Desktop-Windows-x64.zip" download class="btn-square" style="font-size:10px; padding:4px 8px; display:inline-block;">
+                    [ СКАЧАТЬ ZIP ]
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>firmware_merged.bin</strong></td>
+                <td>ESP32-C3 Flash Image (0x0)</td>
+                <td>~1.7 МБ</td>
+                <td><strong>All-in-One образ (Offset 0x0)</strong>: Bootloader + Partitions + OTA + App</td>
+                <td>
+                  <a href="firmware_merged.bin" download class="btn-square btn-square-primary" style="font-size:10px; padding:4px 8px; display:inline-block;">
+                    [ ОБРАЗ 0x0 ]
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>firmware.bin</strong></td>
+                <td>ESP32-C3 App Partition (0x10000)</td>
+                <td>~1.6 МБ</td>
+                <td><strong>Приложение (Offset 0x10000)</strong>: для OTA, PlatformIO и кастомной прошивки</td>
+                <td>
+                  <a href="firmware.bin" download class="btn-square" style="font-size:10px; padding:4px 8px; display:inline-block;">
+                    [ БИНАРНИК 0x10000 ]
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <!-- =========================================================================
@@ -396,30 +573,33 @@
           <div class="step-row-square">
             <div class="step-num-square">01</div>
             <div>
-              <div class="step-text-title">[ ПОДКЛЮЧИТЕ ESP32-C3 ПО USB ]</div>
-              <div class="step-text-desc">Используйте кабель с линиями передачи данных (Data). Устройство определится в системе как USB-Serial.</div>
+              <div class="step-text-title">[ ПОДКЛЮЧИТЕ ESP32-C3 ПО USB-C ]</div>
+              <div class="step-text-desc">Используйте кабель с линиями передачи данных (D+/D-). Встроенный USB-JTAG ESP32-C3 не требует внешних драйверов в Windows 10/11 и Linux.</div>
             </div>
           </div>
 
           <div class="step-row-square">
             <div class="step-num-square">02</div>
             <div>
-              <div class="step-text-title">[ РЕЖИМ ЗАГРУЗЧИКА (BOOTLOADER) ]</div>
-              <div class="step-text-desc">Если порт не отвечает: зажмите кнопку <strong>BOOT</strong>, кратковременно нажмите <strong>RESET</strong> и отпустите <strong>BOOT</strong>.</div>
+              <div class="step-text-title">[ РЕЖИМ ЗАГРУЗЧИКА (BOOTLOADER / DFU) ]</div>
+              <div class="step-text-desc">Если COM-порт не отвечает: зажмите кнопку <strong>BOOT</strong> (GPIO 9), кратковременно нажмите <strong>RESET</strong> и отпустите <strong>BOOT</strong> для входа в ROM Bootloader.</div>
             </div>
           </div>
 
           <div class="step-row-square">
             <div class="step-num-square">03</div>
             <div>
-              <div class="step-text-title">[ НАЖМИТЕ КНОПКУ ПРОШИВКИ ]</div>
-              <div class="step-text-desc">Выберите порт в появившемся окне браузера и подтвердите установку прошивки.</div>
+              <div class="step-text-title">[ 1-CLICK WEBSERIAL УСТАНОВКА ]</div>
+              <div class="step-text-desc">Нажмите кнопку установки в поддерживаемом браузере (Chrome, Edge, Brave, Opera) и выберите COM-порт для быстрой прошивки.</div>
             </div>
           </div>
 
-          <div>
-            <a href="firmware_merged.bin" download class="btn-square" style="width:100%;">
-              [ FIRMWARE: FIRMWARE_MERGED.BIN (1.54 МБ, OFFSET 0x0) ]
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a href="firmware_merged.bin" download class="btn-square btn-square-primary" style="width:100%; text-align:center;">
+              [ СКАЧАТЬ: FIRMWARE_MERGED.BIN (1.7 МБ, OFFSET 0x0 — ВСЁ-В-ОДНОМ) ]
+            </a>
+            <a href="firmware.bin" download class="btn-square" style="width:100%; text-align:center;">
+              [ СКАЧАТЬ: FIRMWARE.BIN (1.6 МБ, OFFSET 0x10000 — ПРИЛОЖЕНИЕ/OTA) ]
             </a>
           </div>
         </div>
@@ -448,7 +628,8 @@
             <!-- Terminal Output Box -->
             <div class="terminal-square-log" id="termLog">
               <div class="term-line highlight">[SYS] WebSerial Engine initialized.</div>
-              <div class="term-line">[IMG] Binary image: firmware_merged.bin (Size: 1.54 MB, 1 611 552 bytes)</div>
+              <div class="term-line">[IMG] Flash image: firmware_merged.bin (Size: 1.68 MB, Offset: 0x0)</div>
+              <div class="term-line">[IMG] App binary: firmware.bin (Size: 1.62 MB, Offset: 0x10000)</div>
               <div class="term-line">[MCU] Target platform: ESP32-C3 SuperMini 160MHz (Sub-GHz + 2.4G)</div>
               <div class="term-line">[ADC] Battery monitor calibrated: GPIO 2 (ADC1_CH2, 100k:100k)</div>
               <div class="term-line">[TIP] Нажмите кнопку выше для автоматической записи прошивки.</div>
@@ -480,7 +661,7 @@
       </div>
 
       <div style="text-align:center; margin: 15px 0;">
-        <img src="ghostrf_wiring_diagram.png" alt="Принципиальная схема GHOSTRF" style="max-width:100%; border:1px solid var(--c-gray-border); border-radius:4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        <img src="ghostrf_wiring_diagram.png" alt="Принципиальная схема GHOSTRF" style="max-width:100%; border:2px solid var(--c-white); border-radius:0px; box-shadow: 4px 4px 0px 0px var(--c-dark-3);">
       </div>
 
       <div style="overflow-x:auto;">
@@ -627,8 +808,9 @@
       <div class="footer-links-side">
         <a href="GHOSTRF-Studio-Desktop-Windows-x64.zip" download class="footer-link-item">[ СКАЧАТЬ WINDOWS (.ZIP, 35 МБ) ]</a>
         <a href="GHOSTRF-Studio-Desktop-Linux-x64.tar.gz" download class="footer-link-item">[ СКАЧАТЬ LINUX (.TAR.GZ, 38 МБ) ]</a>
-        <a href="GHOSTRF-Studio.apk" download class="footer-link-item">[ СКАЧАТЬ ANDROID APK (5.9 МБ) ]</a>
-        <a href="firmware_merged.bin" download class="footer-link-item">[ ПРОШИВКА .BIN (1.54 МБ) ]</a>
+        <a href="GHOSTRF-Studio.apk" download class="footer-link-item">[ СКАЧАТЬ ANDROID APK (6.0 МБ) ]</a>
+        <a href="firmware_merged.bin" download class="footer-link-item">[ ВСЁ-В-ОДНОМ .BIN (1.7 МБ, OFFSET 0x0) ]</a>
+        <a href="firmware.bin" download class="footer-link-item">[ ПРИЛОЖЕНИЕ .BIN (1.6 МБ, OFFSET 0x10000) ]</a>
         <a href="logo.svg" download class="footer-link-item">[ ЛОГОТИП (SVG) ]</a>
       </div>
     </div>

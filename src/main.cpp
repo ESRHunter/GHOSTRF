@@ -9,6 +9,7 @@
 #include "ble_proto.h"
 #include "wifi_tools.h"
 #include "battery.h"
+#include "sub_storage.h"
 
 // =========================================================================
 // СОСТОЯНИЕ ПРИЛОЖЕНИЯ
@@ -73,12 +74,30 @@ void setup() {
 
     storage_init();
     storage_load_all(currentFreqIdx, currentPaIdx, currentSquelchIdx, currentSpectrumBandIdx, savedList, totalSaved);
+
+    // Initialize and mount LittleFS on the 896 KB flash partition
+    if (sub_storage_init()) {
+        size_t totalBytes = sub_storage_total_bytes();
+        size_t usedBytes = sub_storage_used_bytes();
+        size_t freeBytes = sub_storage_free_bytes();
+        Serial.printf("[FS] LittleFS mounted on 896 KB partition: Total=%u B, Used=%u B, Free=%u B\n",
+                      (unsigned int)totalBytes, (unsigned int)usedBytes, (unsigned int)freeBytes);
+        sub_storage_check_and_migrate_nvs();
+    } else {
+        Serial.println("[FS] ERROR: Failed to mount LittleFS on flash partition!");
+    }
+
     battery_init();
     radio_init();
     buttons_init();
     serial_proto_init();
     ble_proto_init();
     wifi_tools_init();
+
+    Serial.printf("[SYS] Free Heap: %u B, Min Free Heap: %u B, Max Alloc Heap: %u B\n",
+                  (unsigned int)ESP.getFreeHeap(),
+                  (unsigned int)ESP.getMinFreeHeap(),
+                  (unsigned int)ESP.getMaxAllocHeap());
 
     // Заставка ровно на 0.5с (500 мс)
     while (millis() - splashStart < 500) {
@@ -1002,4 +1021,6 @@ void loop() {
             ui_draw_battery_screen(battery_get_millivolts(), battery_get_percentage(), battery_is_charging());
         }
     }
+
+    yield();
 }

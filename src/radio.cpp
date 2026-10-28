@@ -1,5 +1,7 @@
 #include "radio.h"
 #include "config.h"
+#include "keeloq.h"
+#include "keeloq_analyzer.h"
 #include <SPI.h>
 #include <ELECHOUSE_CC1101_SRC_DRV.h>
 #include <RCSwitch.h>
@@ -11,16 +13,14 @@ void radio_init() {
     ELECHOUSE_cc1101.setSpiPin(CC_SCK, CC_MISO, CC_MOSI, CC_CS);
     ELECHOUSE_cc1101.setGDO0(CC_GDO0);
 
+    ELECHOUSE_cc1101.Init();
     radioDetected = ELECHOUSE_cc1101.getCC1101();
     if (radioDetected) {
         Serial.println("[OK] CC1101 detected.");
+        radio_modes_init();
     } else {
-        Serial.println("[ERR] CC1101 not detected!");
+        Serial.println("[ERR] CC1101 not detected! Check SPI wiring (SCK, MISO, MOSI, CS).");
     }
-
-    ELECHOUSE_cc1101.Init();
-    ELECHOUSE_cc1101.setRxBW(812.50);  // Широкая полоса 812.5 кГц для авто-брелоков
-    ELECHOUSE_cc1101.setModulation(2); // ASK/OOK
 }
 
 bool radio_is_connected() {
@@ -30,18 +30,22 @@ bool radio_is_connected() {
 static bool rcSwitchEnabled = false;
 
 void radio_apply_config(float freq, int paLevel) {
-    ELECHOUSE_cc1101.setMHZ(freq);
-    ELECHOUSE_cc1101.setPA(paLevel);
-    ELECHOUSE_cc1101.setRxBW(812.50);
-    ELECHOUSE_cc1101.setModulation(2); // ASK/OOK
+    radio_set_preset(radio_get_current_modulation(), freq, paLevel);
 }
 
 void radio_set_rx(float freq, int paLevel) {
     radio_apply_config(freq, paLevel);
     ELECHOUSE_cc1101.SetRx();
-    if (!rcSwitchEnabled) {
-        mySwitch.enableReceive(CC_GDO0);
-        rcSwitchEnabled = true;
+    if (radio_get_current_modulation() == MOD_OOK_ASK) {
+        if (!rcSwitchEnabled) {
+            mySwitch.enableReceive(CC_GDO0);
+            rcSwitchEnabled = true;
+        }
+    } else {
+        if (rcSwitchEnabled) {
+            mySwitch.disableReceive();
+            rcSwitchEnabled = false;
+        }
     }
 }
 
@@ -59,7 +63,7 @@ void radio_set_idle() {
         mySwitch.disableReceive();
         rcSwitchEnabled = false;
     }
-    ELECHOUSE_cc1101.setSidle();
+    radio_safe_sidle();
 }
 
 void radio_transmit_fixed(uint32_t code, uint8_t bitLength, uint16_t pulseLength, uint8_t protocol, float freq, int paLevel, uint8_t repeats) {
@@ -214,11 +218,12 @@ static void IRAM_ATTR isrRawEdge() {
     uint32_t diff = now - isrLastEdge;
     isrLastEdge = now;
 
-    // Фильтр высокочастотных шумов (< 110 мкс)
-    if (diff < 110) return;
+    // Адаптивный фильтр высокочастотных шумов (110 мкс для OOK, 20 мкс для FSK/GFSK)
+    if (diff < radio_get_glitch_filter()) return;
 
-    // Пауза между посылками (7.5мс .. 45мс)
-    if (diff > 7500) {
+    // Пауза между посылками (4мс для FSK/GFSK, 7.5мс для OOK)
+    uint32_t gapThreshold = (radio_get_glitch_filter() <= 30) ? 4000 : 7500;
+    if (diff > gapThreshold) {
         if (isrIndex >= 24) {
             isrPacketReady = true;
         } else {
@@ -598,6 +603,28 @@ static void detectProtocol(RawPacket &pkt) {
         return;
     }
 
+    // 8. Sensor Telemetry (Oregon Scientific v2/v3, TPMS Toyota, Ford, Schrader)
+    SensorTelemetryData telem;
+    if (telemetry_process_pulses(pkt.pulses, pkt.pulseCount, telem)) {
+        pkt.decodedCode = telem.sensorId;
+        pkt.decodedBitLen = (telem.protocol == SENSOR_PROTO_TPMS_TOYOTA) ? 72 :
+                            (telem.protocol == SENSOR_PROTO_TPMS_FORD) ? 64 : 68;
+        pkt.decodedPulseLen = (telem.protocol == SENSOR_PROTO_OREGON_V2 || telem.protocol == SENSOR_PROTO_OREGON_V3) ? 488 : 52;
+        strncpy(pkt.protoName, (telem.protocol == SENSOR_PROTO_OREGON_V3) ? "OS_v3" :
+                               (telem.protocol == SENSOR_PROTO_OREGON_V2) ? "OS_v2" :
+                               (telem.protocol == SENSOR_PROTO_TPMS_TOYOTA) ? "TPMS_Toy" :
+                               (telem.protocol == SENSOR_PROTO_TPMS_FORD) ? "TPMS_Ford" : "TPMS", sizeof(pkt.protoName) - 1);
+        pkt.protoName[sizeof(pkt.protoName) - 1] = '\0';
+        if (telem.pressureKpa_x10 > 0) {
+            snprintf(pkt.extraInfo, sizeof(pkt.extraInfo), "%d.%dkPa %dC", telem.pressureKpa_x10 / 10, telem.pressureKpa_x10 % 10, telem.temperatureC_x10 / 10);
+        } else {
+            int16_t t = telem.temperatureC_x10;
+            const char* sign = (t < 0 && t > -10) ? "-" : "";
+            snprintf(pkt.extraInfo, sizeof(pkt.extraInfo), "%s%d.%dC %d%%", sign, t / 10, abs(t % 10), telem.humidityPct);
+        }
+        return;
+    }
+
     // Fallback эвристика по синхропаузе
     uint32_t syncLen = 0;
     for (int i = 0; i < pkt.pulseCount; i++) {
@@ -661,12 +688,15 @@ bool radio_check_raw(RawPacket &outPacket, int squelchDbm) {
             return false;
         }
 
-        // 2. Проверяем наличие синхропаузы (пульты ворот/авто имеют паузу 1.8мс..15мс)
-        bool hasPreambleOrSync = false;
-        for (int i = 0; i < isrIndex; i++) {
-            if (isrPulses[i] >= 1800 && isrPulses[i] <= 15000) {
-                hasPreambleOrSync = true;
-                break;
+        // 2. Проверяем наличие синхропаузы (пульты ворот/авто имеют паузу 1.8мс..15мс, FSK телеметрия использует более короткие паузы)
+        bool isFskMode = (radio_get_current_modulation() != MOD_OOK_ASK);
+        bool hasPreambleOrSync = isFskMode;
+        if (!hasPreambleOrSync) {
+            for (int i = 0; i < isrIndex; i++) {
+                if (isrPulses[i] >= 1800 && isrPulses[i] <= 15000) {
+                    hasPreambleOrSync = true;
+                    break;
+                }
             }
         }
 
@@ -696,6 +726,43 @@ bool radio_check_raw(RawPacket &outPacket, int squelchDbm) {
         return true;
     }
     return false;
+}
+
+bool radio_check_telemetry(SensorTelemetryData &outData) {
+    if (!isrListening) return false;
+
+    uint32_t gapTimeout = (radio_get_glitch_filter() <= 30) ? 6000 : 12000;
+    if (!isrPacketReady && isrIndex >= 24 && (micros() - isrLastEdge > gapTimeout)) {
+        isrPacketReady = true;
+    }
+
+    if (isrPacketReady) {
+        uint16_t count = isrIndex;
+        if (count < 24) {
+            isrIndex = 0;
+            isrPacketReady = false;
+            isrListening = true;
+            return false;
+        }
+
+        uint16_t pulsesCopy[MAX_RAW_PULSES];
+        for (uint16_t i = 0; i < count; i++) {
+            pulsesCopy[i] = isrPulses[i];
+        }
+
+        isrIndex = 0;
+        isrPacketReady = false;
+        isrListening = true;
+
+        return telemetry_process_pulses(pulsesCopy, count, outData);
+    }
+    return false;
+}
+
+void radio_start_telemetry_sniffer(RfModulation mod, float freqMhz, int paLevel) {
+    radio_stop_raw_sniffer();
+    radio_set_preset(mod, freqMhz, paLevel);
+    radio_start_raw_sniffer(freqMhz, paLevel, -95);
 }
 
 #include "soc/gpio_struct.h"
@@ -836,17 +903,9 @@ void radio_transmit_pt2240(uint32_t code24, float freq, int paLevel, uint8_t rep
 }
 
 void radio_transmit_doorhan(uint32_t serial, uint16_t counter, uint8_t button, float freq, int paLevel, uint8_t repeats) {
-    uint16_t pulses[134];
-    pulses[0] = 400;
-    pulses[1] = 4000; // DoorHan sync gap
-    int pIdx = 2;
-    uint64_t frame = ((uint64_t)(button & 0x0F) << 60) |
-                     ((uint64_t)(serial & 0x0FFFFFFF) << 32) |
-                     ((uint64_t)(counter & 0xFFFF) << 16) | (counter & 0xFFFF);
-    for (int b = 65; b >= 0; b--) {
-        bool bit = (frame >> b) & 1;
-        pulses[pIdx++] = bit ? 800 : 400;
-        pulses[pIdx++] = bit ? 400 : 800;
+    uint16_t pulses[160];
+    uint16_t count = keeloq_emulate_next(serial, button, counter, KLQ_KEY_DOORHAN, pulses);
+    if (count > 0) {
+        radio_transmit_raw_pulses(pulses, count, freq, paLevel, repeats);
     }
-    radio_transmit_raw_pulses(pulses, 134, freq, paLevel, repeats);
 }

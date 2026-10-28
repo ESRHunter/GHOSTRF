@@ -7,12 +7,27 @@
 #include "ui.h"
 #include "battery.h"
 #include "wifi_tools.h"
+#include "sub_storage.h"
+#include "sub_format.h"
 
 static char rxLineBuf[1024];
 static int rxLineLen = 0;
 static bool screenStreaming = false;
 static unsigned long lastScreenStream = 0;
 static const char hexLookup[] = "0123456789ABCDEF";
+
+// Captured signal state for SUB_SAVE_CAPTURED
+static bool s_hasCapturedFixed = false;
+static uint32_t s_lastCapturedCode = 0;
+static uint8_t s_lastCapturedBitLen = 0;
+static uint16_t s_lastCapturedPulseLen = 0;
+static uint8_t s_lastCapturedProto = 0;
+static float s_lastCapturedFreq = 433.92f;
+
+static bool s_hasCapturedRaw = false;
+static RawPacket s_lastCapturedRaw;
+static float s_lastCapturedRawFreq = 433.92f;
+static bool s_lastCapturedIsRaw = false;
 
 static void proto_println(const char* str) {
     Serial.println(str);
@@ -90,7 +105,8 @@ static inline void send_screen_frame(bool force = true) {
 void serial_proto_init() {
     rxLineLen = 0;
     screenStreaming = false;
-    proto_println("{\"event\":\"DEVICE_READY\",\"device\":\"GHOSTRF\",\"ver\":\"1.2.0\"}");
+    sub_storage_init();
+    proto_println("{\"event\":\"DEVICE_READY\",\"device\":\"GHOSTRF\",\"ver\":\"1.2.0\",\"fs\":\"LittleFS\"}");
 }
 
 static void send_pong(int sigCount, int freqIdx, int paIdx, int squelchIdx) {
@@ -507,6 +523,193 @@ void proto_process_line(char* line, SavedSignal* sigList, int &sigCount, int &fr
         proto_printf("{\"cmd\":\"TEST_CC1101\",\"freq\":%.2f,\"marc\":%d,\"pkt\":%d,\"raw_rssi\":%d,\"dbm\":%d}",
                      f, marc, pkt, rawRssi, dbm);
     }
+    else if (strncmp(line, "FS_INFO", 7) == 0) {
+        if (!sub_storage_init()) {
+            proto_println("{\"cmd\":\"FS_INFO\",\"status\":\"ERR\",\"msg\":\"FS mount failed\"}");
+        } else {
+            size_t total = sub_storage_total_bytes();
+            size_t used = sub_storage_used_bytes();
+            size_t freeB = (total >= used) ? (total - used) : 0;
+            proto_printf("{\"cmd\":\"FS_INFO\",\"status\":\"OK\",\"total\":%u,\"used\":%u,\"free\":%u}",
+                         (unsigned)total, (unsigned)used, (unsigned)freeB);
+        }
+    }
+    else if (strncmp(line, "FS_LIST", 7) == 0) {
+        char dirPath[64] = "/sub";
+        sscanf(line + 7, "%63s", dirPath);
+        static SignalMeta metaList[MAX_SIGNALS_INDEX];
+        int count = sub_storage_list_files(metaList, MAX_SIGNALS_INDEX, dirPath);
+        proto_printf("{\"cmd\":\"FS_LIST_BEGIN\",\"dir\":\"%s\"}", dirPath);
+        for (int i = 0; i < count; i++) {
+            const SignalMeta &m = metaList[i];
+            const char* typeStr = (m.fileType == SUB_TYPE_RAW) ? "RAW" : "KEY";
+            proto_printf("{\"cmd\":\"FS_FILE\",\"name\":\"%s\",\"size\":%u,\"proto\":\"%s\",\"freq\":%.3f,\"type\":\"%s\",\"repeats\":%d}",
+                         m.filename, (unsigned)m.fileSize, m.protocol, m.frequency, typeStr, (int)m.repeats);
+            if (i % 8 == 0) delay(1);
+        }
+        proto_printf("{\"cmd\":\"FS_LIST_END\",\"count\":%d}", count);
+    }
+    else if (strncmp(line, "FS_DELETE", 9) == 0) {
+        char filename[64] = {0};
+        int parsed = sscanf(line + 9, "%63s", filename);
+        if (parsed >= 1 && filename[0]) {
+            if (sub_storage_delete(filename)) {
+                proto_printf("{\"cmd\":\"FS_DELETE\",\"status\":\"OK\",\"file\":\"%s\"}", filename);
+            } else {
+                proto_printf("{\"cmd\":\"FS_DELETE\",\"status\":\"ERR\",\"msg\":\"File not found or delete failed\",\"file\":\"%s\"}", filename);
+            }
+        } else {
+            proto_println("{\"cmd\":\"FS_DELETE\",\"status\":\"ERR\",\"msg\":\"Missing filename\"}");
+        }
+    }
+    else if (strncmp(line, "FS_FORMAT", 9) == 0) {
+        if (sub_storage_format()) {
+            proto_println("{\"cmd\":\"FS_FORMAT\",\"status\":\"OK\"}");
+        } else {
+            proto_println("{\"cmd\":\"FS_FORMAT\",\"status\":\"ERR\",\"msg\":\"Format failed\"}");
+        }
+    }
+    else if (strncmp(line, "SUB_INFO", 8) == 0) {
+        char filename[64] = {0};
+        int parsed = sscanf(line + 8, "%63s", filename);
+        if (parsed >= 1 && filename[0]) {
+            SignalMeta meta;
+            if (sub_storage_get_meta(filename, meta)) {
+                if (meta.fileType == SUB_TYPE_KEY) {
+                    proto_printf("{\"cmd\":\"SUB_INFO\",\"status\":\"OK\",\"file\":\"%s\",\"name\":\"%s\",\"type\":\"KEY\",\"proto\":\"%s\",\"freq\":%.3f,\"bit\":%d,\"key\":\"0x%llX\",\"te\":%u,\"repeats\":%d,\"size\":%u}",
+                                 meta.filename, meta.name, meta.protocol, meta.frequency, meta.bitLength, (unsigned long long)meta.fullCode, (unsigned)meta.pulseLength, meta.repeats, (unsigned)meta.fileSize);
+                } else {
+                    proto_printf("{\"cmd\":\"SUB_INFO\",\"status\":\"OK\",\"file\":\"%s\",\"name\":\"%s\",\"type\":\"RAW\",\"proto\":\"RAW\",\"freq\":%.3f,\"raw_count\":%u,\"size\":%u}",
+                                 meta.filename, meta.name, meta.frequency, (unsigned)meta.rawCount, (unsigned)meta.fileSize);
+                }
+            } else {
+                proto_printf("{\"cmd\":\"SUB_INFO\",\"status\":\"ERR\",\"msg\":\"Cannot open or parse file\",\"file\":\"%s\"}", filename);
+            }
+        } else {
+            proto_println("{\"cmd\":\"SUB_INFO\",\"status\":\"ERR\",\"msg\":\"Missing filename\"}");
+        }
+    }
+    else if (strncmp(line, "SUB_READ", 8) == 0) {
+        char filename[64] = {0};
+        int parsed = sscanf(line + 8, "%63s", filename);
+        if (parsed >= 1 && filename[0]) {
+            char path[128];
+            if (filename[0] == '/') {
+                snprintf(path, sizeof(path), "%s", filename);
+            } else {
+                snprintf(path, sizeof(path), "/sub/%s", filename);
+                if (!LittleFS.exists(path)) {
+                    snprintf(path, sizeof(path), "/%s", filename);
+                }
+            }
+
+            fs::File f = LittleFS.open(path, "r");
+            if (!f || f.isDirectory()) {
+                proto_printf("{\"cmd\":\"SUB_READ_ERR\",\"status\":\"ERR\",\"msg\":\"File not found\",\"file\":\"%s\"}", filename);
+            } else {
+                proto_printf("{\"cmd\":\"SUB_READ_BEGIN\",\"file\":\"%s\",\"size\":%u}", filename, (unsigned)f.size());
+                int lineCount = 0;
+                char readBuf[256];
+                int bIdx = 0;
+
+                while (f.available()) {
+                    char c = (char)f.read();
+                    if (c == '\r') continue;
+                    if (c == '\n') {
+                        readBuf[bIdx] = '\0';
+                        proto_printf("{\"cmd\":\"SUB_LINE\",\"text\":\"%s\"}", readBuf);
+                        bIdx = 0;
+                        lineCount++;
+                        if (lineCount % 10 == 0) delay(1);
+                    } else {
+                        if (bIdx + 1 < (int)sizeof(readBuf)) {
+                            if (c == '"' || c == '\\') {
+                                if (bIdx + 2 < (int)sizeof(readBuf)) {
+                                    readBuf[bIdx++] = '\\';
+                                }
+                            }
+                            readBuf[bIdx++] = c;
+                        }
+                    }
+                }
+                if (bIdx > 0) {
+                    readBuf[bIdx] = '\0';
+                    proto_printf("{\"cmd\":\"SUB_LINE\",\"text\":\"%s\"}", readBuf);
+                    lineCount++;
+                }
+                f.close();
+                proto_printf("{\"cmd\":\"SUB_READ_END\",\"file\":\"%s\",\"lines\":%d}", filename, lineCount);
+            }
+        } else {
+            proto_println("{\"cmd\":\"SUB_READ_ERR\",\"status\":\"ERR\",\"msg\":\"Missing filename\"}");
+        }
+    }
+    else if (strncmp(line, "SUB_TX", 6) == 0) {
+        char filename[64] = {0};
+        int reps = -1;
+        int parsed = sscanf(line + 6, "%63s %d", filename, &reps);
+        if (parsed >= 1 && filename[0]) {
+            if (sub_storage_transmit(filename, reps, PA_LEVELS[paIdx])) {
+                proto_printf("{\"cmd\":\"SUB_TX_DONE\",\"status\":\"OK\",\"file\":\"%s\"}", filename);
+            } else {
+                proto_printf("{\"cmd\":\"SUB_TX_DONE\",\"status\":\"ERR\",\"msg\":\"Transmission failed\",\"file\":\"%s\"}", filename);
+            }
+        } else {
+            proto_println("{\"cmd\":\"SUB_TX_DONE\",\"status\":\"ERR\",\"msg\":\"Missing filename\"}");
+        }
+    }
+    else if (strncmp(line, "SUB_SAVE_CAPTURED", 17) == 0) {
+        char filename[64] = {0};
+        int parsed = sscanf(line + 17, "%63s", filename);
+        if (parsed >= 1 && filename[0]) {
+            char fullFname[64];
+            size_t flen = strlen(filename);
+            if (flen < 4 || strcasecmp(filename + flen - 4, ".sub") != 0) {
+                snprintf(fullFname, sizeof(fullFname), "%s.sub", filename);
+            } else {
+                snprintf(fullFname, sizeof(fullFname), "%s", filename);
+            }
+
+            bool saved = false;
+            if (s_lastCapturedIsRaw && s_hasCapturedRaw && s_lastCapturedRaw.pulseCount > 0) {
+                saved = sub_storage_save_raw(fullFname, s_lastCapturedRawFreq, s_lastCapturedRaw.pulses, s_lastCapturedRaw.pulseCount, 4);
+                if (saved) {
+                    proto_printf("{\"cmd\":\"SUB_SAVE_DONE\",\"status\":\"OK\",\"file\":\"%s\",\"type\":\"RAW\",\"pulses\":%d}",
+                                 fullFname, s_lastCapturedRaw.pulseCount);
+                }
+            } else if (s_hasCapturedFixed) {
+                const char* pName = "Princeton";
+                if (s_lastCapturedProto == 4) pName = "Came";
+                else if (s_lastCapturedProto == 6) pName = "Nice FLO";
+                saved = sub_storage_save_fixed(fullFname, pName, s_lastCapturedFreq, s_lastCapturedCode, s_lastCapturedBitLen, s_lastCapturedPulseLen, 5);
+                if (saved) {
+                    proto_printf("{\"cmd\":\"SUB_SAVE_DONE\",\"status\":\"OK\",\"file\":\"%s\",\"type\":\"KEY\",\"proto\":\"%s\"}",
+                                 fullFname, pName);
+                }
+            } else if (sigCount > 0) {
+                const SavedSignal &sig = sigList[sigCount - 1];
+                if (sig.type == SIG_RAW || sig.rawCount > 0) {
+                    saved = sub_storage_save_raw(fullFname, sig.freq, sig.rawPulses, sig.rawCount, sig.repeats);
+                    if (saved) {
+                        proto_printf("{\"cmd\":\"SUB_SAVE_DONE\",\"status\":\"OK\",\"file\":\"%s\",\"type\":\"RAW\",\"pulses\":%d}",
+                                     fullFname, sig.rawCount);
+                    }
+                } else {
+                    saved = sub_storage_save_fixed(fullFname, sig.protoName, sig.freq, sig.code, sig.bitLength, sig.pulseLength, sig.repeats);
+                    if (saved) {
+                        proto_printf("{\"cmd\":\"SUB_SAVE_DONE\",\"status\":\"OK\",\"file\":\"%s\",\"type\":\"KEY\",\"proto\":\"%s\"}",
+                                     fullFname, sig.protoName);
+                    }
+                }
+            }
+
+            if (!saved) {
+                proto_println("{\"cmd\":\"SUB_SAVE_DONE\",\"status\":\"ERR\",\"msg\":\"No captured signal to save\"}");
+            }
+        } else {
+            proto_println("{\"cmd\":\"SUB_SAVE_DONE\",\"status\":\"ERR\",\"msg\":\"Missing filename\"}");
+        }
+    }
     else if (strncmp(line, "REBOOT", 6) == 0) {
         proto_println("{\"cmd\":\"REBOOTING\"}");
         delay(100);
@@ -546,6 +749,14 @@ void serial_proto_poll(SavedSignal* sigList, int &sigCount, int &freqIdx, int &p
 }
 
 void serial_proto_broadcast_fixed_rx(uint32_t code, uint8_t bitLen, uint16_t pulseLen, uint8_t proto, float freq, int rssi) {
+    s_hasCapturedFixed = true;
+    s_lastCapturedCode = code;
+    s_lastCapturedBitLen = bitLen;
+    s_lastCapturedPulseLen = pulseLen;
+    s_lastCapturedProto = proto;
+    s_lastCapturedFreq = freq;
+    s_lastCapturedIsRaw = false;
+
     char buf[160];
     snprintf(buf, sizeof(buf), "{\"event\":\"CAPTURED_FIXED\",\"code\":%lu,\"codeHex\":\"0x%lX\",\"bitLen\":%d,\"pulseLen\":%d,\"proto\":%d,\"freq\":%.3f,\"rssi\":%d}",
              (unsigned long)code, (unsigned long)code, bitLen, pulseLen, proto, freq, rssi);
@@ -553,6 +764,10 @@ void serial_proto_broadcast_fixed_rx(uint32_t code, uint8_t bitLen, uint16_t pul
 }
 
 void serial_proto_broadcast_raw_rx(const RawPacket &pkt, float freq, int rssi) {
+    s_hasCapturedRaw = true;
+    memcpy(&s_lastCapturedRaw, &pkt, sizeof(RawPacket));
+    s_lastCapturedRawFreq = freq;
+    s_lastCapturedIsRaw = true;
     Serial.print("{\"event\":\"CAPTURED_RAW\",\"proto\":\"");
     Serial.print(pkt.protoName);
     Serial.print("\",\"isKeeloq\":");
